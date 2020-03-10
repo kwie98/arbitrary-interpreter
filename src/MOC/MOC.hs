@@ -1,4 +1,4 @@
-module MOC.MOC where
+module MoC.MoC where
 
 data MoC = MoC {
     validState :: (String -> Bool) ,

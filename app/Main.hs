@@ -1,7 +1,7 @@
 module Main where
 
-import Program
-import LabeledTree
+import Parse.ParseProgram
+import Util.LabeledTree
 
 program1 = "#sm, 2 registers\n\
 \Start:\n\

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 01a29bef5de71edb6d6d252f09cbbb2778f8d38f73d5aad62f8117b5509f6685
+-- hash: 226fb0bee2af82c7521961ed89164deda3cca94d574931ce500a9f97942b74cf
 
 name:           arbitrary-interpreter
 version:        0.1.0.0
@@ -27,13 +27,16 @@ source-repository head
 
 library
   exposed-modules:
-      BDTVector
-      LabeledTree
-      MOC.CounterMachine
-      MOC.MOC
-      MOC.StackMachine
-      Program
-      SPLib
+      MoC.CounterMachine
+      MoC.MoC
+      MoC.StackMachine
+      Parse.ParseMoC
+      Parse.ParseProgram
+      Parse.PreExecCheck
+      Parse.ReadProgramUtil
+      Util.BDTVector
+      Util.LabeledTree
+      Util.SPLib
   other-modules:
       Paths_arbitrary_interpreter
   hs-source-dirs:

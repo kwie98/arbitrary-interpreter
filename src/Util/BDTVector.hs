@@ -1,10 +1,10 @@
-module BDTVector
-( BDTVector
-, treeToVector
+module Util.BDTVector (
+BDTVector,
+treeToVector
 ) where
 
 import qualified Data.Vector as Vector
-import qualified LabeledTree as LT
+import qualified Util.LabeledTree as LT
 
 type BDTVector = Vector.Vector String
 

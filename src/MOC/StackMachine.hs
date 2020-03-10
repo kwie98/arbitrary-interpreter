@@ -1,8 +1,10 @@
-module MOC.StackMachine where
+module MoC.StackMachine (
+stackMachine
+) where
 
 import Text.Read
 import Data.Maybe
-import MOC.MOC
+import MoC.MoC
 
 -- build a stack machine with a given number of registers over the given
 -- alphabet (consisting only of alphanumerical symbols). Each stack is a string with the top
@@ -101,7 +103,7 @@ isInvalidRegister numRegs r
     | otherwise   = False
 
 
-oobErrMsg k i = ("tried to access register "++(show i)++" of stack machine with "++(show k)++" registers")
+oobErrMsg k i = "tried to access register " ++ (show i) ++ " of stack machine with " ++ (show k) ++ " registers"
 
 sm3 = (stackMachine 3 "ACEace012")
 

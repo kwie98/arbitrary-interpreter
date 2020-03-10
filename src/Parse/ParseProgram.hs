@@ -1,16 +1,18 @@
-module Program where
+module Parse.ParseProgram (
+Program,
+parseProgram
+) where
 
-import MOC.MOC
-import MOC.CounterMachine
-import MOC.StackMachine
-import BDTVector
+import MoC.MoC
+import MoC.CounterMachine
+import MoC.StackMachine
+import Util.BDTVector
+import Parse.ReadProgramUtil
 import Data.List
 import Data.Char
 import qualified Data.HashMap.Strict as Map
 
-
 type Program = Map.HashMap String (String, BDTVector)
-
 
 parseProgram :: String -> Program
 parseProgram text = buildMap body
@@ -22,29 +24,10 @@ parseProgram text = buildMap body
 -- #%moc, %i registers (maybe other auxiliary info?) DONE
 -- line with : is state, BDT comes after it DONE
 --   state name / operation: (state name and operation cannot include '/') DONE?
--- states cannot appear more than once!
+-- states cannot appear more than once! DONE
 -- after parsing all trees, check that all leafs are existing state names and
 --   all inner nodes are predicates
 -- also check that all operations are valid in the given MoC
-
-
--- #<modelName> <arg1> <arg2> ...
-parseMoC :: String -> MoC
-parseMoC text
-    | not valid         = error $ err ++ "Bad format"
-    | modelName == "cm" = counterMachine ((read $ args !! 1) :: Int)
-    | modelName == "sm" = stackMachine ((read $ args !! 1) :: Int) (args !! 2)
-    | otherwise         = error $ err ++ "Unknown model name"
-    where
-        args      = words . head $ prepareProgramText text -- split first line on whitespace
-        valid     = let name = head args in (length $ name) > 1 && head name == '#'
-        modelName = tail $ head args -- first arg, remove leading #
-        err       = "Error parsing MoC definition: "
-
-
--- split program into non-empty lines with no trailing whitespace
-prepareProgramText :: String -> [String]
-prepareProgramText text = filter (not . null) $ map (dropWhileEnd isSpace) $ lines text
 
 
 -- check that there are BDTs for every state definition after using collapseTrees
@@ -113,7 +96,6 @@ getOp def
 -- Resulting list of strings has elements that either represent a state definition or a whole BDT.
 collapseTrees :: [String] -> [String]
 collapseTrees []  = []
--- collapseTrees [x] = [x]
 collapseTrees plines@(x:xs)
     | isStateDef x = x : collapseTrees xs
     | otherwise    = (collapse tree) : collapseTrees rest

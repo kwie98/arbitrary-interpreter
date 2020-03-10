@@ -1,8 +1,10 @@
-module MOC.CounterMachine where
+module MoC.CounterMachine (
+counterMachine
+) where
 
 import Text.Read
 import Data.Maybe
-import MOC.MOC
+import MoC.MoC
 
 if' :: Bool -> a -> a -> a
 if' True x _ = x
@@ -77,7 +79,7 @@ isInvalidRegister numRegs r
     | r < 1       = True
     | otherwise   = False
 
-oobErrMsg k i = ("tried to access register "++(show i)++" of counter machine with "++(show k)++" registers")
+oobErrMsg k i = "tried to access register " ++ (show i) ++ " of counter machine with " ++ (show k) ++ " registers"
 
 showCMState k ms = (show (map (\i -> (getCMRegisterValue k i ms)) [1..k]))
 

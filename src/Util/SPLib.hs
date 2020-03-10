@@ -1,25 +1,25 @@
-module SPLib where
+module Util.SPLib where
 
 import Debug.Trace
-import qualified Data.List (elemIndex, intercalate, find, findIndex) 
+import qualified Data.List (elemIndex, intercalate, find, findIndex)
 import qualified Data.Maybe (isNothing)
 
 -- Operators &&, ||, /=, ==, <=, >=, <, >, +, *, ^, not, ++
 
 if'       :: Bool -> a -> a -> a
-just      :: (Maybe a) -> a 
+just      :: (Maybe a) -> a
 isNothing :: (Maybe a) -> Bool
 
 --map    :: (a -> b) -> [a] -> [b]         ; in Prelude
 --filter :: (a -> Bool) -> [a]             ; in Prelude
-reduce   :: (a -> a -> a) -> [a] -> a 
+reduce   :: (a -> a -> a) -> [a] -> a
 --zip    :: [a] -> [b] -> [(a,b)]          ; in Prelude
 --find   ::  Foldable t => (a -> Bool) -> t a -> Maybe a
 find     ::  (a -> Bool) -> [a] -> (Maybe a)
 findIndex     ::  (a -> Bool) -> [a] -> (Maybe Int)
 
-get    :: [a] -> Int -> a 
-first  :: [a] -> a 
+get    :: [a] -> Int -> a
+first  :: [a] -> a
 --last :: [a] -> a                         ; in Prelude
 
 --length   :: [a] -> Int                   ; in Prelude
@@ -39,9 +39,9 @@ sublist      :: [a] -> Int -> Int -> [a]
 
 --take       :: Int -> [a] -> [a]          ; in Prelude; takes first k elements of list
 --drop       :: Int -> [a] -> [a]          ; in Prelude; drops first k elements from list
---splitAt    :: Int -> [a] -> ([a],[a])    ; in Prelude; splitAt n lst = ((take n lst),(drop n lst)) 
+--splitAt    :: Int -> [a] -> ([a],[a])    ; in Prelude; splitAt n lst = ((take n lst),(drop n lst))
 
-strPos       :: String -> String -> Int -> (Maybe Int) --haystack, needle, offset 
+strPos       :: String -> String -> Int -> (Maybe Int) --haystack, needle, offset
 
 join         :: String -> [String] -> String           --separator, list
 split        :: String -> String -> [String]           --separator, text
@@ -60,17 +60,17 @@ isNothing = Data.Maybe.isNothing
 find = Data.List.find
 findIndex = Data.List.findIndex
 
-reduce f list = 
+reduce f list =
     (if' ((length list) == 1)
         (head list)
-        (reduce f 
+        (reduce f
             ( (f (head list) (get list 1)) : (tail (tail list)))
-        )    
-    )    
+        )
+    )
 
 get list index = (list!!index)
 first list = (list!!0)
-contains list val = (elem val list)  
+contains list val = (elem val list)
 indexOf list val = (just (Data.List.elemIndex val list))
 isEmpty list = (null list)
 append list val = (list++[val])
@@ -91,21 +91,21 @@ insert list index val = x++(prepend y val)
     (x,y) = (splitAt index list)
 remove list index = x++(removeFirst y)
   where
-    (x,y) = (splitAt index list)    
+    (x,y) = (splitAt index list)
 
-  
+
 strPos haystack "" offset = (error errMsg)
   where
     errMsg = "empty needle"++errArgs
     errArgs = "; (haystack,needle,offset)=("++(join "," [(show haystack),(show ""),(show offset)])++")"
-    
-strPos haystack needle offset = 
+
+strPos haystack needle offset =
   (if' (offset < 0) (error errMsg)
-    (if' (offset >= (length haystack)) Nothing    
-      (if' (offset > 0) 
+    (if' (offset >= (length haystack)) Nothing
+      (if' (offset > 0)
         normalize
         (if' ((length haystack)<(length needle))
-          Nothing 
+          Nothing
           (if' (containsFirstNeedleChar && restLongEnough)
             (if' match
               (Just posFirstNeedleChar)
@@ -116,31 +116,31 @@ strPos haystack needle offset =
             )
             Nothing
           )
-        )                    
+        )
       )
-    )    
+    )
   )
   where
-    normalizeM = (strPos (drop offset haystack) needle 0) 
-    normalize = (if' (isNothing normalizeM) Nothing (Just ((just normalizeM)+offset)))    
-    containsFirstNeedleChar = (contains haystack (first needle))    
+    normalizeM = (strPos (drop offset haystack) needle 0)
+    normalize = (if' (isNothing normalizeM) Nothing (Just ((just normalizeM)+offset)))
+    containsFirstNeedleChar = (contains haystack (first needle))
     posFirstNeedleChar = (indexOf haystack (first needle))
-    restLongEnough = ((length (drop posFirstNeedleChar haystack)) >= (length needle))    
-    match = (needle == (sublist haystack posFirstNeedleChar (length needle)))           
+    restLongEnough = ((length (drop posFirstNeedleChar haystack)) >= (length needle))
+    match = (needle == (sublist haystack posFirstNeedleChar (length needle)))
     errMsg = "offset < 0"++errArgs
     errArgs = "; (haystack,needle,offset)=("++(join "," [(show haystack),(show needle),(show offset)])++")"
 
-splitAtFirst sep str = 
-  (if' (isNothing posM) 
+splitAtFirst sep str =
+  (if' (isNothing posM)
     (error errMsg)
     ((sublist str 0 pos), (drop (pos+(length sep)) str))
   )
   where
     posM = (strPos str sep 0)
-    pos = (just posM)    
+    pos = (just posM)
     errMsg = "str does not contain sep"++errArgs
-    errArgs = "; (sep,str)=("++(join "," [(show sep),(show str)])++")"    
-    
+    errArgs = "; (sep,str)=("++(join "," [(show sep),(show str)])++")"
+
 join sep list = (Data.List.intercalate sep list)
 split sep str = (if' (noSep) [str] (prepend (split sep y) x) )
   where
@@ -148,7 +148,7 @@ split sep str = (if' (noSep) [str] (prepend (split sep y) x) )
     (x,y) = (splitAtFirst sep str)
 
 
--- functions for program tracing  
+-- functions for program tracing
 traceValueSeparator :: String --constant used to separate values
 traceFunctionSig :: String -> String -> [String] -> a -> a
 traceFunctionCall :: String -> [String] -> a -> a
