@@ -25,9 +25,6 @@ parseProgram text = buildMap body
 -- line with : is state, BDT comes after it DONE
 --   state name / operation: (state name and operation cannot include '/') DONE?
 -- states cannot appear more than once! DONE
--- after parsing all trees, check that all leafs are existing state names and
---   all inner nodes are predicates
--- also check that all operations are valid in the given MoC
 
 
 -- check that there are BDTs for every state definition after using collapseTrees
