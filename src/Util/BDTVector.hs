@@ -24,11 +24,11 @@ treeToVector tree =
 
 isNode :: BDTVector -> Int -> Bool
 isNode v i
-    | isNothing val     = False
-    | null fromJust val = False
-    | otherwise         = True
+    | isNothing val       = False
+    | null $ fromJust val = False
+    | otherwise           = True
     where
-        val = v !? i
+        val = v Vector.!? i
 
 
 isLeaf :: BDTVector -> Int -> Bool
