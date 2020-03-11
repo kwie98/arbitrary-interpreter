@@ -6,12 +6,21 @@ import Text.Read
 import Data.Maybe
 import MoC.MoC
 
-if' :: Bool -> a -> a -> a
-if' True x _ = x
-if' False _ x = x
+-- count and check arguments before passing to builder
+counterMachine :: [String] -> MoC
+counterMachine args
+    | length args /= 2 = error $ err ++ "Incorrect number of arguments"
+    | isNothing marg1  = error $ err ++ "Expected number of registers, got: " ++ args !! 1
+    | arg1 < 1         = error $ err ++ "Number of registers needs to be greater or equal to 1"
+    | otherwise        = buildCM arg1
+    where
+        marg1 = readMaybe (args !! 1) :: Maybe Int
+        arg1  = fromJust marg1
+        err   = "Error parsing arguments for counter machine: "
 
-counterMachine :: Int -> MoC
-counterMachine numRegs = MoC (validCMState numRegs) ops preds
+
+buildCM :: Int -> MoC
+buildCM numRegs = MoC (isValidCMState numRegs) ops preds
     where
         getReg = (getCMRegisterValue numRegs)
         setReg = (setCMRegisterValue numRegs)
@@ -36,7 +45,8 @@ counterMachine numRegs = MoC (validCMState numRegs) ops preds
 -- Rr+1, Rr-1
 validCMOperations :: Int -> [String]
 validCMOperations numRegs =
-    ((map (\reg -> ("R"++(show reg)++"+1")) [1..numRegs]) ++ (map (\reg -> ("R"++(show reg)++"-1")) [1..numRegs]))
+    (map (\reg -> ("R"++(show reg)++"+1")) [1..numRegs]) ++
+    (map (\reg -> ("R"++(show reg)++"-1")) [1..numRegs])
 
 
 -- Rr=0
@@ -46,8 +56,8 @@ validCMPredicates numRegs =
 
 
 -- check if given machine state fits given number of registers of the machine
-validCMState :: Int -> String -> Bool
-validCMState r regs
+isValidCMState :: Int -> String -> Bool
+isValidCMState r regs
     | isNothing regs'    = False
     | length regs'' == r = True
     | otherwise          = False
@@ -84,8 +94,8 @@ oobErrMsg k i = "tried to access register " ++ (show i) ++ " of counter machine 
 showCMState k ms = (show (map (\i -> (getCMRegisterValue k i ms)) [1..k]))
 
 --EXAMPLES
-cm4 = (counterMachine 4)
-show1 = (showCMState 4)
+cm4 = buildCM 4
+show1 = showCMState 4
 
 inc :: Int -> (String -> String)
 inc i = (fromJust (ops cm4 ("R"++(show i)++"+1")))

@@ -10,8 +10,8 @@ import Parse.ReadProgramUtil
 parseMoC :: String -> MoC
 parseMoC text
     | not valid         = error $ err ++ "Bad format"
-    | modelName == "cm" = counterMachine ((read $ args !! 1) :: Int)
-    | modelName == "sm" = stackMachine ((read $ args !! 1) :: Int) (args !! 2)
+    | modelName == "cm" = counterMachine args
+    | modelName == "sm" = stackMachine args
     | otherwise         = error $ err ++ "Unknown model name"
     where
         args      = words . head $ prepareProgramText text -- split first line on whitespace

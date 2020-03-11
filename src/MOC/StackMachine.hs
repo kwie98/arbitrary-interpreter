@@ -6,11 +6,26 @@ import Text.Read
 import Data.Maybe
 import MoC.MoC
 
+-- count and check arguments before passing to builder
+stackMachine :: [String] -> MoC
+stackMachine args
+    | length args /= 3        = error $ err ++ "Incorrect number of arguments"
+    | isNothing marg1         = error $ err ++ "Expected number of registers, got: " ++ args !! 1
+    | arg1 < 1                = error $ err ++ "Number of registers needs to be greater or equal to 1"
+    | not $ isSMAlphabet arg2 = error $ err ++ "Alphabet needs to be non-empty and can only consist of alphanumerical symbols"
+    | otherwise               = buildSM arg1 arg2
+    where
+        marg1 = readMaybe (args !! 1) :: Maybe Int
+        arg1  = fromJust marg1
+        arg2  = args !! 2
+        err   = "Error parsing arguments for stack machine: "
+
+
 -- build a stack machine with a given number of registers over the given
 -- alphabet (consisting only of alphanumerical symbols). Each stack is a string with the top
 -- top element being on the left side
-stackMachine :: Int -> String -> MoC
-stackMachine numRegs alphabet = MoC (validSMState numRegs alphabet) ops preds
+buildSM :: Int -> String -> MoC
+buildSM numRegs alphabet = MoC (isValidSMState numRegs alphabet) ops preds
     where
         ops opCode
             | valid && isPop = Just (\regs -> (popSM numRegs r regs))
@@ -38,26 +53,31 @@ stackMachine numRegs alphabet = MoC (validSMState numRegs alphabet) ops preds
 -- Rr+s, Rr-
 validSMOperations :: Int -> String -> [String]
 validSMOperations numRegs alphabet =
-    ((map (\(reg, symbol) -> ("R" ++ (show reg) ++ "+" ++ [symbol])) [(a, b) | a <- [1..numRegs], b <- alphabet]) ++
-    (map (\reg -> ("R" ++ (show reg) ++ "-")) [1..numRegs]))
+    (map (\(reg, symbol) -> ("R" ++ (show reg) ++ "+" ++ [symbol])) [(a, b) | a <- [1..numRegs], b <- alphabet]) ++
+    (map (\reg -> ("R" ++ (show reg) ++ "-")) [1..numRegs])
 
 -- Rr=s, Rr=_
 validSMPredicates :: Int -> String -> [String]
 validSMPredicates numRegs alphabet =
-    ((map (\(reg, symbol) -> ("R" ++ (show reg) ++ "=" ++ [symbol])) [(a, b) | a <- [1..numRegs], b <- alphabet]) ++
-    (map (\reg -> ("R" ++ (show reg) ++ "=_")) [1..numRegs]))
+    (map (\(reg, symbol) -> ("R" ++ (show reg) ++ "=" ++ [symbol])) [(a, b) | a <- [1..numRegs], b <- alphabet]) ++
+    (map (\reg -> ("R" ++ (show reg) ++ "=_")) [1..numRegs])
 
 
-validSMState :: Int -> String -> String -> Bool
-validSMState r alphabet regs
-    | isNothing regs'    = False
-    | not validAlphabet  = False
-    | length regs'' == r = and (map (all (flip elem alphabet)) regs'') -- check that all registers only have valid symbols
-    | otherwise          = False
+isValidSMState :: Int -> String -> String -> Bool
+isValidSMState r alphabet regs
+    | isNothing regs'             = False
+    | not $ isSMAlphabet alphabet = False
+    | length regs'' == r          = and (map (all (flip elem alphabet)) regs'') -- check that all registers only have valid symbols
+    | otherwise                   = False
         where
-            validAlphabet = all (flip elem $ ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9']) alphabet
             regs'         = readMaybe regs :: Maybe [String]
             regs''        = fromJust regs'
+
+
+isSMAlphabet :: String -> Bool
+isSMAlphabet alphabet =
+    not $ null alphabet &&
+    all (flip elem $ ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9']) alphabet
 
 
 isEmptySM :: Int -> Int -> String -> Bool
@@ -105,7 +125,7 @@ isInvalidRegister numRegs r
 
 oobErrMsg k i = "tried to access register " ++ (show i) ++ " of stack machine with " ++ (show k) ++ " registers"
 
-sm3 = (stackMachine 3 "ACEace012")
+sm3 = buildSM 3 "ACEace012"
 
 append :: Int -> Char -> (String -> String)
 append r s = (fromJust (ops sm3 ("R" ++ (show r) ++ "+" ++ [s])))
