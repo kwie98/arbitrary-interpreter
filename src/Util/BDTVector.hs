@@ -1,6 +1,8 @@
 module Util.BDTVector (
 BDTVector,
-treeToVector
+treeToVector,
+leaves,
+branches
 ) where
 
 import Data.Maybe
@@ -23,20 +25,41 @@ treeToVector tree =
 
 
 isNode :: BDTVector -> Int -> Bool
-isNode v i
+isNode bdt i
     | isNothing val       = False
     | null $ fromJust val = False
     | otherwise           = True
     where
-        val = v Vector.!? i
+        val = bdt Vector.!? i
 
 
 isLeaf :: BDTVector -> Int -> Bool
-isLeaf v i
-    | not $ isNode v i       = False
-    | not $ isNode v (i * 2) = False -- position of first child
+isLeaf bdt i
+    | not $ isNode bdt i     = False
+    | isNode bdt (i * 2 + 1) = False -- position of first child
     | otherwise              = True
 
 
-isInner :: BDTVector -> Int -> Bool
-isInner v i = (isNode v i) && (not $ isLeaf v i)
+isBranch :: BDTVector -> Int -> Bool
+isBranch bdt i = (isNode bdt i) && (not $ isLeaf bdt i)
+
+
+leaves :: BDTVector -> [String]
+leaves bdt = leaves' bdt 0
+
+
+leaves' :: BDTVector -> Int -> [String]
+leaves' bdt i
+    | isLeaf bdt i = [bdt Vector.! i]
+    | isNode bdt i = leaves' bdt (i * 2 + 1) ++ leaves' bdt (i * 2 + 2)
+    | otherwise    = []
+
+
+branches :: BDTVector -> [String]
+branches bdt = branches' bdt 0
+
+
+branches' :: BDTVector -> Int -> [String]
+branches' bdt i
+    | isBranch bdt i = (bdt Vector.! i) : branches' bdt (i * 2 + 1) ++ branches' bdt (i * 2 + 2)
+    | otherwise      = []
