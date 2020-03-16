@@ -63,7 +63,7 @@ validSMPredicates numRegs alphabet =
     (map (\reg -> ("R" ++ (show reg) ++ "=_")) [1..numRegs])
 
 
-isValidSMState :: Int -> String -> String -> Bool
+isValidSMState :: Int -> String -> MachineState -> Bool
 isValidSMState r alphabet regs
     | isNothing regs'             = False
     | not $ isSMAlphabet alphabet = False
@@ -80,14 +80,14 @@ isSMAlphabet alphabet =
     all (flip elem $ ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9']) alphabet
 
 
-isEmptySM :: Int -> Int -> String -> Bool
+isEmptySM :: Int -> Int -> MachineState -> Bool
 isEmptySM numRegs r regs
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)
     | otherwise                   = regs' !! (r - 1) == ""
         where regs' = read regs :: [String]
 
 
-isSymbolSM :: Int -> Int -> Char -> String -> Bool
+isSymbolSM :: Int -> Int -> Char -> MachineState -> Bool
 isSymbolSM numRegs r s regs
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)
     | isEmptySM numRegs r regs    = False
@@ -95,7 +95,7 @@ isSymbolSM numRegs r s regs
         where regs' = read regs :: [String]
 
 
-popSM :: Int -> Int -> String -> String
+popSM :: Int -> Int -> MachineState -> MachineState
 popSM numRegs r regs
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)
     | isEmptySM numRegs r regs    = regs -- don't change state when the register is already empty
@@ -106,7 +106,7 @@ popSM numRegs r regs
             regs' = read regs :: [String]
 
 
-pushSM :: Int -> Int -> String -> Char -> String
+pushSM :: Int -> Int -> MachineState -> Char -> MachineState
 pushSM numRegs r regs val
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)
     | numRegs == r                = show $ fst split ++ [val : (head (snd split))] -- when modifying last register
@@ -124,17 +124,3 @@ isInvalidRegister numRegs r
 
 
 oobErrMsg k i = "tried to access register " ++ (show i) ++ " of stack machine with " ++ (show k) ++ " registers"
-
-sm3 = buildSM 3 "ACEace012"
-
-append :: Int -> Char -> (String -> String)
-append r s = (fromJust (ops sm3 ("R" ++ (show r) ++ "+" ++ [s])))
-
-remove :: Int -> (String -> String)
-remove r = (fromJust (ops sm3 ("R" ++ (show r) ++ "-")))
-
-isSymbol :: Int -> Char -> (String -> Bool)
-isSymbol r s = (fromJust (preds sm3 ("R" ++ (show r) ++ "=" ++ [s])))
-
-isEmpty :: Int -> (String -> Bool)
-isEmpty r = (fromJust (preds sm3 ("R" ++ (show r) ++ "=_")))

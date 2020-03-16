@@ -56,7 +56,7 @@ validCMPredicates numRegs =
 
 
 -- check if given machine state fits given number of registers of the machine
-isValidCMState :: Int -> String -> Bool
+isValidCMState :: Int -> MachineState -> Bool
 isValidCMState r regs
     | isNothing regs'    = False
     | length regs'' == r = True
@@ -66,14 +66,14 @@ isValidCMState r regs
         regs'' = fromJust regs'
 
 
-getCMRegisterValue :: Int -> Int -> String -> Int
+getCMRegisterValue :: Int -> Int -> MachineState -> Int
 getCMRegisterValue numRegs r regs
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)
     | otherwise                   = regs' !! (r - 1)
     where regs' = read regs :: [Int]
 
 
-setCMRegisterValue :: Int -> Int -> String -> Int -> String
+setCMRegisterValue :: Int -> Int -> MachineState -> Int -> MachineState
 setCMRegisterValue numRegs r regs val
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)
     | numRegs == r                = show $ fst split ++ [val]
@@ -90,22 +90,3 @@ isInvalidRegister numRegs r
     | otherwise   = False
 
 oobErrMsg k i = "tried to access register " ++ (show i) ++ " of counter machine with " ++ (show k) ++ " registers"
-
-showCMState k ms = (show (map (\i -> (getCMRegisterValue k i ms)) [1..k]))
-
---EXAMPLES
-cm4 = buildCM 4
-show1 = showCMState 4
-
-inc :: Int -> (String -> String)
-inc i = (fromJust (ops cm4 ("R"++(show i)++"+1")))
-dec :: Int -> (String -> String)
-dec i = (fromJust (ops cm4 ("R"++(show i)++"-1")))
-is0 :: Int -> (String -> Bool)
-is0 i = (fromJust (preds cm4 ("R"++(show i)++"=0")))
-
-
-z4 = show [1, 2, 3, 0]
-z5 = (inc 1 z4)
-z6 = (dec 1 z5)
-z7 = (dec 4 z6)
