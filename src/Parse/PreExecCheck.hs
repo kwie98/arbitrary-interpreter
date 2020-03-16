@@ -13,20 +13,40 @@ import qualified Data.HashMap.Strict as Map
 preExecCheck :: Program -> MoC -> Bool
 preExecCheck prog moc =
     allLeavesStates trees states &&
-    allInnerPreds trees moc &&
+    allBranchesPreds trees moc &&
     allOpsValid ops moc
     where
         ops    = map (fst) $ Map.elems prog
         trees  = map (snd) $ Map.elems prog
-        states = Map.keys prog
+        states = "End" : Map.keys prog
 
+
+-- assert that all leaves in every given BDT are included in the given state list
 allLeavesStates :: [BDTVector] -> [String] -> Bool
-allLeavesStates trees states = False
+allLeavesStates [] _ = True
+allLeavesStates (tree:trees) states
+    | null nonStates = allLeavesStates trees states
+    | otherwise = error $ err ++ "State(s) " ++ show nonStates ++ " are mentioned in BDT " ++ show tree ++ ", but are not defined states in the program."
+    where
+        nonStates = filter (\leaf -> not $ leaf `elem` states) (leaves tree)
 
 
-allInnerPreds :: [BDTVector] -> MoC -> Bool
-allInnerPreds trees moc = False
+-- assert that all branches in every given BDT are valid predicates in the given MoC
+allBranchesPreds :: [BDTVector] -> MoC -> Bool
+allBranchesPreds [] _ = True
+allBranchesPreds (tree:trees) moc
+    | null nonPreds = allBranchesPreds trees moc
+    | otherwise = error $ err ++ "Predicate(s) " ++ show nonPreds ++ " are mentioned in BDT" ++ show tree ++ ", but are not valid predicates of the given MoC"
+    where
+        nonPreds = filter (\branch -> not $ isPred moc branch) (branches tree)
 
 
+-- assert that all operations from the program are valid operations in the given MoC
 allOpsValid :: [String] -> MoC -> Bool
-allOpsValid ops moc = False
+allOpsValid [] _ = True
+allOpsValid (op:ops) moc
+    | isOp moc op = allOpsValid ops moc
+    | otherwise = error $ err ++ "Program mentions invalid operation " ++ op
+
+
+err = "Error checking program: "

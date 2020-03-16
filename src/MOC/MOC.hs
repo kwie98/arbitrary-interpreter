@@ -10,7 +10,10 @@ data MoC = MoC {
 
 
 isOp :: MoC -> String -> Bool
-isOp moc s = isJust $ ops moc s
+isOp moc s
+    | s == "NOP"         = True
+    | isJust $ ops moc s = True
+    | otherwise          = False
 
 
 isPred :: MoC -> String -> Bool

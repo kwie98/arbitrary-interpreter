@@ -37,8 +37,8 @@ validateStructure [pline]
     where
         err = "Error parsing program body: "
 validateStructure (p1:p2:plines) -- always needs to be a pair of a state definition and a BDT
-    | not $ isStateDef p1 = error $ err ++ "Expected state definition, but found decision tree instead: " ++ p1
-    | isStateDef p2       = error $ err ++ "Expected decision tree, but found state definition instead: " ++ p2
+    | not $ isStateDef p1 = error $ err ++ "Expected state definition, but found: " ++ p1
+    | isStateDef p2       = error $ err ++ "Expected decision tree, but found: " ++ p2
     | otherwise           = (filter (not . isSpace) p1) : p2 : validateStructure plines
     where
         err = "Error parsing program body: "
@@ -62,8 +62,9 @@ buildMap (def:tree:plines) = Map.unionWithKey throwError single (buildMap plines
 isStateDef :: String -> Bool
 isStateDef ""   = False
 isStateDef line
-    | isStartDef line = True
-    | otherwise       = last line' == ':' && elem '/' line' && nameExists && opExists
+    | isStartDef line        = True
+    | getState line == "End" = False -- states cannot be named "End"
+    | otherwise              = last line' == ':' && elem '/' line' && nameExists && opExists
     where
         nameExists = not . null $ getState line
         opExists   = not . null $ getOp line
@@ -83,7 +84,7 @@ getState def = takeWhile (/= '/') def'
 -- from a state definition, extract the operation
 getOp :: String -> String
 getOp def
-    | isStartDef def = ""
+    | isStartDef def = "NOP"
     | otherwise      = init . tail $ dropWhile (/= '/') def'
     where
         def' = filter (not . isSpace) def

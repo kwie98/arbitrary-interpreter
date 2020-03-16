@@ -1,7 +1,8 @@
 module Main where
 
+import Parse.ParseMoC
 import Parse.ParseProgram
-import Util.LabeledTree
+import Parse.PreExecCheck
 
 program1 = "#sm, 2 registers\n\
 \Start:\n\
@@ -68,4 +69,6 @@ program3 = "#sm, 2 registers"
 
 
 main :: IO ()
-main = print $ parseProgram program1
+main = do
+    prog <- getContents
+    print $ preExecCheck (parseProgram prog) (parseMoC prog)
