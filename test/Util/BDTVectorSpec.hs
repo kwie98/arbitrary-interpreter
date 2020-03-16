@@ -9,6 +9,7 @@ import Util.BDTVector
 spec :: Spec
 spec = do
     let v1 = Vector.fromList ["root", "fc", ""]
+        v2 = Vector.generate 123 (show)
 
     describe "leaves" $ do
         it "returns an empty list when given an empty BDT" $
@@ -52,5 +53,13 @@ spec = do
             (branches $ Vector.generate 31 (show)) `shouldMatchList`
             (map (show) [0 .. 14])
 
+    describe "leaves and branches" $ do
+        it "together, they return all nodes of any tree" $
+            (leaves v2) ++ (branches v2) `shouldMatchList` Vector.toList v2
 
-            -- TODO branches ++ leaves always returns list of all nodes of BDT
+        it "leaves and branches are mutually exclusive" $
+            (leaves v2, branches v2) `shouldSatisfy`
+            (\(l1, l2) ->
+                all (\e -> not $ elem e l2) l1 &&
+                all (\e -> not $ elem e l1) l2
+            )
