@@ -1,4 +1,4 @@
-module Util.SPLib where
+module ArbitraryInterpreter.Util.SPLib where
 
 import Debug.Trace
 import qualified Data.List (elemIndex, intercalate, find, findIndex)

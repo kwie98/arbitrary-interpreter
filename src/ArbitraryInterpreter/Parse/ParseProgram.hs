@@ -1,18 +1,15 @@
-module Parse.ParseProgram (
-Program,
-parseProgram
+module ArbitraryInterpreter.Parse.ParseProgram
+( parseProgram
 ) where
 
-import MoC.MoC
-import MoC.CounterMachine
-import MoC.StackMachine
-import Util.BDTVector
-import Parse.ReadProgramUtil
+import ArbitraryInterpreter.Defs
+import ArbitraryInterpreter.MoC.CounterMachine
+import ArbitraryInterpreter.MoC.StackMachine
+import ArbitraryInterpreter.Util.BDTVector
+import ArbitraryInterpreter.Parse.ReadProgramUtil
 import Data.List
 import Data.Char
 import qualified Data.HashMap.Strict as Map
-
-type Program = Map.HashMap String (String, BDTVector)
 
 parseProgram :: String -> Program
 parseProgram text = buildMap body
@@ -80,6 +77,7 @@ isStartDef line = filter (not . isSpace) line == "Start:"
 getState :: String -> String
 getState def = takeWhile (/= '/') def'
     where def' = filter (not . isSpace) def
+
 
 -- from a state definition, extract the operation
 getOp :: String -> String

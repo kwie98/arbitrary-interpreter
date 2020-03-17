@@ -1,6 +1,6 @@
-module Util.LabeledTree where
+module ArbitraryInterpreter.Util.LabeledTree where
 
-import Util.SPLib
+import ArbitraryInterpreter.Util.SPLib
 
 data LabeledTree = LabeledTree String [LabeledTree] -- (Eq,Show,Read)
 type Path = [Int] -- [] = root node, [0,2] = first child of root node, then third child of that node

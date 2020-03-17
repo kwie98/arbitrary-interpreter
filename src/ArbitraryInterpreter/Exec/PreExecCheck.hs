@@ -1,15 +1,17 @@
-module Parse.PreExecCheck (
-preExecCheck
+module ArbitraryInterpreter.Exec.PreExecCheck
+( preExecCheck
 ) where
 
-import Parse.ParseProgram
-import MoC.MoC
-import Util.BDTVector
+import ArbitraryInterpreter.Defs
+import ArbitraryInterpreter.Parse.ParseProgram
+import ArbitraryInterpreter.Util.BDTVector
+import Data.Maybe (isJust)
 import qualified Data.HashMap.Strict as Map
 
 -- after parsing all trees, check that all leaves are existing state names and
---   all inner nodes are predicates
+-- all inner nodes are predicates
 -- also check that all operations are valid in the given MoC
+-- TODO check structure of all BDTs? (everything reachable, always two children or none)
 preExecCheck :: Program -> MoC -> Bool
 preExecCheck prog moc =
     allLeavesStates trees states &&
@@ -22,7 +24,7 @@ preExecCheck prog moc =
 
 
 -- assert that all leaves in every given BDT are included in the given state list
-allLeavesStates :: [BDTVector] -> [String] -> Bool
+allLeavesStates :: [BDTVector] -> [ProgramState] -> Bool
 allLeavesStates [] _ = True
 allLeavesStates (tree:trees) states
     | null nonStates = allLeavesStates trees states
@@ -42,11 +44,18 @@ allBranchesPreds (tree:trees) moc
 
 
 -- assert that all operations from the program are valid operations in the given MoC
-allOpsValid :: [String] -> MoC -> Bool
+allOpsValid :: [OpName] -> MoC -> Bool
 allOpsValid [] _ = True
 allOpsValid (op:ops) moc
     | isOp moc op = allOpsValid ops moc
     | otherwise = error $ err ++ "Program mentions invalid operation " ++ op
 
+
+isOp :: MoC -> OpName -> Bool
+isOp moc s = isJust $ ops moc s
+
+
+isPred :: MoC -> PredName -> Bool
+isPred moc s = isJust $ preds moc s
 
 err = "Error checking program: "

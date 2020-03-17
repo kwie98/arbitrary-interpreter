@@ -1,10 +1,10 @@
-module MoC.StackMachine (
+module ArbitraryInterpreter.MoC.StackMachine (
 stackMachine
 ) where
 
+import ArbitraryInterpreter.Defs
 import Text.Read
 import Data.Maybe
-import MoC.MoC
 
 -- count and check arguments before passing to builder
 stackMachine :: [String] -> MoC
@@ -56,6 +56,7 @@ validSMOperations :: Int -> String -> [String]
 validSMOperations numRegs alphabet =
     (map (\(reg, symbol) -> ("R" ++ (show reg) ++ "+" ++ [symbol])) [(a, b) | a <- [1..numRegs], b <- alphabet]) ++
     (map (\reg -> ("R" ++ (show reg) ++ "-")) [1..numRegs])
+
 
 -- Rr=s, Rr=_
 validSMPredicates :: Int -> String -> [String]
@@ -122,6 +123,5 @@ isInvalidRegister numRegs r
     | r > numRegs = True
     | r < 1       = True
     | otherwise   = False
-
 
 oobErrMsg k i = "tried to access register " ++ (show i) ++ " of stack machine with " ++ (show k) ++ " registers"

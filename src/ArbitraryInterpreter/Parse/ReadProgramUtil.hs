@@ -1,4 +1,4 @@
-module Parse.ReadProgramUtil (
+module ArbitraryInterpreter.Parse.ReadProgramUtil (
 prepareProgramText
 ) where
 

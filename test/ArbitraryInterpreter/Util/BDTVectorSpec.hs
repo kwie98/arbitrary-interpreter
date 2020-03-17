@@ -1,10 +1,10 @@
-module Util.BDTVectorSpec (spec) where
+module ArbitraryInterpreter.Util.BDTVectorSpec (spec) where
 
+import ArbitraryInterpreter.Util.BDTVector
 import Test.Hspec
 import Data.List
 import Control.Monad
 import qualified Data.Vector as Vector
-import Util.BDTVector
 
 spec :: Spec
 spec = do

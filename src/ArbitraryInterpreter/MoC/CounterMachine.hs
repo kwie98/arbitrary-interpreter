@@ -1,10 +1,10 @@
-module MoC.CounterMachine (
+module ArbitraryInterpreter.MoC.CounterMachine (
 counterMachine
 ) where
 
+import ArbitraryInterpreter.Defs
 import Text.Read
 import Data.Maybe
-import MoC.MoC
 
 -- count and check arguments before passing to builder
 counterMachine :: [String] -> MoC

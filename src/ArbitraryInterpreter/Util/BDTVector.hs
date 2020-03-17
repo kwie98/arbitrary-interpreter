@@ -1,24 +1,25 @@
-module Util.BDTVector (
-BDTVector,
-treeToVector,
-leaves,
-branches
+module ArbitraryInterpreter.Util.BDTVector
+( treeToVector
+, isNode
+, isLeaf
+, isBranch
+, leaves
+, branches
 ) where
 
+import ArbitraryInterpreter.Defs
+import ArbitraryInterpreter.Util.LabeledTree (LabeledTree, mapNodes, isBinaryTree)
 import Data.Maybe
 import qualified Data.Vector as Vector
-import qualified Util.LabeledTree as LT
-
-type BDTVector = Vector.Vector String
 
 -- Put the Data from a labeled binary (decision) tree into a Vector.
-treeToVector :: LT.LabeledTree -> BDTVector
+treeToVector :: LabeledTree -> BDTVector
 treeToVector tree =
-    if not $ LT.isBinaryTree tree
+    if not $ isBinaryTree tree
     then error "treeToArray: Given tree not binary"
     else Vector.replicate len "" Vector.// mappedNodes
         where
-            mappedNodes = LT.mapNodes tree
+            mappedNodes = mapNodes tree
             len = (maximum $ map (fst) mappedNodes) + 1
 -- no trailing empty strings,
 -- all labels from tree present and in correct order (breadth first)

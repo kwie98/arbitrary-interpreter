@@ -1,11 +1,11 @@
-module Parse.ParseMoC (
-parseMoC
+module ArbitraryInterpreter.Parse.ParseMoC
+( parseMoC
 ) where
 
-import MoC.MoC
-import MoC.CounterMachine
-import MoC.StackMachine
-import Parse.ReadProgramUtil
+import ArbitraryInterpreter.Defs
+import ArbitraryInterpreter.MoC.CounterMachine
+import ArbitraryInterpreter.MoC.StackMachine
+import ArbitraryInterpreter.Parse.ReadProgramUtil
 
 parseMoC :: String -> MoC
 parseMoC text
