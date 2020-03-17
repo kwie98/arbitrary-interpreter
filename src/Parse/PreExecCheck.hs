@@ -26,7 +26,7 @@ allLeavesStates :: [BDTVector] -> [String] -> Bool
 allLeavesStates [] _ = True
 allLeavesStates (tree:trees) states
     | null nonStates = allLeavesStates trees states
-    | otherwise = error $ err ++ "State(s) " ++ show nonStates ++ " are mentioned in BDT " ++ show tree ++ ", but are not defined states in the program."
+    | otherwise = error $ err ++ "State(s) " ++ show nonStates ++ " are mentioned in BDT " ++ show tree ++ ", but are not defined states in the program"
     where
         nonStates = filter (\leaf -> not $ leaf `elem` states) (leaves tree)
 
@@ -36,7 +36,7 @@ allBranchesPreds :: [BDTVector] -> MoC -> Bool
 allBranchesPreds [] _ = True
 allBranchesPreds (tree:trees) moc
     | null nonPreds = allBranchesPreds trees moc
-    | otherwise = error $ err ++ "Predicate(s) " ++ show nonPreds ++ " are mentioned in BDT" ++ show tree ++ ", but are not valid predicates of the given MoC"
+    | otherwise = error $ err ++ "Predicate(s) " ++ show nonPreds ++ " are mentioned in BDT" ++ show tree ++ ", but are not defined in the given MoC"
     where
         nonPreds = filter (\branch -> not $ isPred moc branch) (branches tree)
 

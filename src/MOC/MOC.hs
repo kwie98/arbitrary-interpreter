@@ -13,10 +13,8 @@ type PredName     = String
 
 
 isOp :: MoC -> OpName -> Bool
-isOp moc s
-    | s == "NOP"         = True
-    | isJust $ ops moc s = True
-    | otherwise          = False
+isOp moc s = isJust $ ops moc s
+
 
 
 isPred :: MoC -> PredName -> Bool

@@ -25,9 +25,10 @@ buildCM numRegs = MoC (isValidCMState numRegs) ops preds
         getReg = (getCMRegisterValue numRegs)
         setReg = (setCMRegisterValue numRegs)
         ops opCode
-            | valid && isAdd = Just (\ms -> (setReg r ms ((getReg r ms) + 1)))
-            | valid          = Just (\ms -> (setReg r ms (max 0 ((getReg r ms) - 1))))
-            | otherwise      = Nothing
+            | valid && isAdd  = Just (\ms -> (setReg r ms ((getReg r ms) + 1)))
+            | valid           = Just (\ms -> (setReg r ms (max 0 ((getReg r ms) - 1))))
+            | opCode == "NOP" = Just id
+            | otherwise       = Nothing
             where
                 -- check String representation of operation
                 valid = elem opCode $ validCMOperations numRegs

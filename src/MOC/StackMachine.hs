@@ -28,9 +28,10 @@ buildSM :: Int -> String -> MoC
 buildSM numRegs alphabet = MoC (isValidSMState numRegs alphabet) ops preds
     where
         ops opCode
-            | valid && isPop = Just (\regs -> (popSM numRegs r regs))
-            | valid          = Just (\regs -> (pushSM numRegs r regs s))
-            | otherwise      = Nothing
+            | valid && isPop  = Just (\regs -> (popSM numRegs r regs))
+            | valid           = Just (\regs -> (pushSM numRegs r regs s))
+            | opCode == "NOP" = Just id
+            | otherwise       = Nothing
                 where
                     valid = elem opCode $ validSMOperations numRegs alphabet
                     isPop = last opCode == '-' -- whether operation code describes a pop operation on a register
