@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fe2a1c8d9afa41141120ca4cfbc1bf56c5ccc6ebb0563c3fb3181b7bc7d4df0c
+-- hash: b1f80d7a29901f2e5767d2a6d5ba0aecff3fbc350179576c6ae4d865e305261e
 
 name:           arbitrary-interpreter
 version:        0.1.0.0
@@ -31,7 +31,7 @@ library
       ArbitraryInterpreter.Exec.PreExecCheck
       ArbitraryInterpreter.Exec.RunProgram
       ArbitraryInterpreter.MoC.CounterMachine
-      ArbitraryInterpreter.MoC.StackMachine
+      ArbitraryInterpreter.MoC.InvertedStackMachine
       ArbitraryInterpreter.Parse.ParseMoC
       ArbitraryInterpreter.Parse.ParseProgram
       ArbitraryInterpreter.Parse.ReadProgramUtil

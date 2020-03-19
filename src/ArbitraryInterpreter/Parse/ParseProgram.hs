@@ -4,7 +4,7 @@ module ArbitraryInterpreter.Parse.ParseProgram
 
 import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.MoC.CounterMachine
-import ArbitraryInterpreter.MoC.StackMachine
+import ArbitraryInterpreter.MoC.InvertedStackMachine
 import ArbitraryInterpreter.Util.BDTVector
 import ArbitraryInterpreter.Parse.ReadProgramUtil
 import Data.List
