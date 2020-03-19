@@ -1,6 +1,7 @@
 module ArbitraryInterpreter.Exec.RunProgram
 ( evalSafe
 , evalBDT
+, run
 ) where
 
 import ArbitraryInterpreter.Defs
@@ -13,8 +14,11 @@ import qualified Data.Vector as Vector
 type PredicateSequence = [String]
 
 -- Execute program for one step, not running preExecCheck
+-- Throw an error when trying to evaluate "End" state
 eval :: MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState, PredicateSequence)
-eval moc program pstate mstate = (pstate', mstate', preds)
+eval moc program pstate mstate = case pstate' of
+    "End" -> (pstate', mstate, preds)
+    _     -> (pstate', mstate', preds)
     where
         -- get new program state and precicate sequence by evaluating BDT of old program state on old machine state
         (pstate', preds) = case Map.lookup pstate program of
@@ -54,12 +58,13 @@ evalBDT moc bdt mstate = (last path, init path)
 
 -- preExecCheck asserts that all branches are valid predicates and that all
 -- leaves are valid states. List of strings consists of all checked predicates
--- and ends with the new program state
+-- and ends with the new program state. First branch corresponds to predicate
+-- being false, second branch corresponds to predicate being true
 evalBDT' :: MoC -> BDTVector -> Int -> MachineState -> [String]
 evalBDT' moc bdt i mstate
     | isPState           = [curNode]
-    | isPred && predTrue = curNode : evalBDT' moc bdt (i * 2 + 1) mstate
-    | isPred             = curNode : evalBDT' moc bdt (i * 2 + 2) mstate
+    | isPred && predTrue = curNode : evalBDT' moc bdt (i * 2 + 2) mstate
+    | isPred             = curNode : evalBDT' moc bdt (i * 2 + 1) mstate
     | otherwise          = error $ err ++ "invalid node in BDT reached: " ++ show bdt ++ " (index: " ++ show i ++ ")"
     where
         curNode  = bdt Vector.! i
@@ -70,7 +75,20 @@ evalBDT' moc bdt i mstate
             Just f  -> f mstate
 
 
--- run a program for x steps / until completion, first asserting that the program is valid for the given MoC
--- run  :: MoC -> (Maybe Int) -> Program -> MachineState -> (ProgramState, MachineState)
+-- run a program for x steps, first asserting that the program is valid for the given MoC
+run :: Maybe Int -> MoC -> Program -> MachineState -> (ProgramState, MachineState)
+run i moc program mstate = case preExecCheck program moc of
+    False -> error $ err ++ "Invalid program"
+    True  -> run' i moc program "Start" mstate
+
+
+run' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState)
+run' i moc program pstate mstate
+    | ((> 0) <$> i) == Just False = (pstate, mstate) -- no steps left
+    | pstate == "End"             = (pstate, mstate) -- end state reached
+    | otherwise                   = run' i' moc program pstate' mstate'
+    where
+        i' = (subtract 1) <$> i
+        (pstate', mstate', _) = eval moc program pstate mstate
 
 err = "Error running program: "

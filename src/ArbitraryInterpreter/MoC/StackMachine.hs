@@ -22,8 +22,9 @@ stackMachine args
 
 
 -- build a stack machine with a given number of registers over the given
--- alphabet (consisting only of alphanumerical symbols). Each stack is a string with the top
--- top element being on the left side
+-- alphabet (consisting only of alphanumerical symbols). Each stack is a string
+-- with the top element being on the left side
+-- TODO this stack machine works with "inverted" stacks, rename to InvertedStackMachine and write a normal StackMachine
 buildSM :: Int -> String -> MoC
 buildSM numRegs alphabet = MoC (isValidSMState numRegs alphabet) ops preds
     where
