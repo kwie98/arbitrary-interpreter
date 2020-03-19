@@ -75,8 +75,11 @@ isStartDef line = filter (not . isSpace) line == "Start:"
 
 -- from a state definition, extract the state name
 getState :: String -> String
-getState def = takeWhile (/= '/') def'
-    where def' = filter (not . isSpace) def
+getState def
+    | isStartDef def = "Start"
+    | otherwise      = takeWhile (/= '/') def'
+    where
+        def' = filter (not . isSpace) def
 
 
 -- from a state definition, extract the operation
