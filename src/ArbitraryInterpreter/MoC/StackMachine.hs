@@ -1,5 +1,6 @@
-module ArbitraryInterpreter.MoC.StackMachine (
-stackMachine
+module ArbitraryInterpreter.MoC.StackMachine
+( stackMachine
+, isSMAlphabet
 ) where
 
 import ArbitraryInterpreter.Defs
@@ -12,12 +13,14 @@ stackMachine args
     | length args /= 3        = error $ err ++ "Incorrect number of arguments"
     | isNothing marg1         = error $ err ++ "Expected number of registers, got: " ++ args !! 1
     | arg1 < 1                = error $ err ++ "Number of registers needs to be greater or equal to 1"
+    | isNothing marg2         = error $ err ++ "Expected alphabet, got: " ++ args !! 2 ++ " (express alphabet as symbols in String form with enclosing quotation marks)"
     | not $ isSMAlphabet arg2 = error $ err ++ "Alphabet needs to be non-empty and can only consist of alphanumerical symbols"
     | otherwise               = buildSM arg1 arg2
     where
         marg1 = readMaybe (args !! 1) :: Maybe Int
         arg1  = fromJust marg1
-        arg2  = args !! 2
+        marg2 = readMaybe (args !! 2) :: Maybe String
+        arg2  = fromJust marg2
         err   = "Error parsing arguments for stack machine: "
 
 
@@ -78,11 +81,10 @@ isValidSMState r alphabet regs
 
 isSMAlphabet :: String -> Bool
 isSMAlphabet alphabet =
-    not $ null alphabet &&
-    all (flip elem $ ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9']) alphabet
+    (not . null $ alphabet) &&
+    all (\symbol -> symbol `elem` ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9']) alphabet
 
 
--- same as ISM
 isEmptySM :: Int -> Int -> MachineState -> Bool
 isEmptySM numRegs r regs
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)
@@ -90,7 +92,6 @@ isEmptySM numRegs r regs
         where regs' = read regs :: [String]
 
 
--- check last instead of head
 isSymbolSM :: Int -> Int -> Char -> MachineState -> Bool
 isSymbolSM numRegs r s regs
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)
@@ -99,7 +100,6 @@ isSymbolSM numRegs r s regs
         where regs' = read regs :: [String]
 
 
--- remove last element instead of first (init instead of tail)
 popSM :: Int -> Int -> MachineState -> MachineState
 popSM numRegs r regs
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)
@@ -111,7 +111,6 @@ popSM numRegs r regs
             regs' = read regs :: [String]
 
 
--- append element instead of prepending it (x ++ [val] instead of val : x)
 pushSM :: Int -> Int -> MachineState -> Char -> MachineState
 pushSM numRegs r regs val
     | isInvalidRegister numRegs r = error (oobErrMsg numRegs r)

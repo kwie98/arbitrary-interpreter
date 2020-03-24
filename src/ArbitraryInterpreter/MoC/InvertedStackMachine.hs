@@ -3,6 +3,7 @@ invertedStackMachine
 ) where
 
 import ArbitraryInterpreter.Defs
+import ArbitraryInterpreter.MoC.StackMachine (isSMAlphabet)
 import Text.Read
 import Data.Maybe
 
@@ -12,12 +13,14 @@ invertedStackMachine args
     | length args /= 3         = error $ err ++ "Incorrect number of arguments"
     | isNothing marg1          = error $ err ++ "Expected number of registers, got: " ++ args !! 1
     | arg1 < 1                 = error $ err ++ "Number of registers needs to be greater or equal to 1"
+    | isNothing marg2          = error $ err ++ "Expected alphabet, got: " ++ args !! 2 ++ " (express alphabet as symbols in String form with enclosing quotation marks)"
     | not $ isISMAlphabet arg2 = error $ err ++ "Alphabet needs to be non-empty and can only consist of alphanumerical symbols"
     | otherwise                = buildISM arg1 arg2
     where
         marg1 = readMaybe (args !! 1) :: Maybe Int
         arg1  = fromJust marg1
-        arg2  = args !! 2
+        marg2 = readMaybe (args !! 2) :: Maybe String
+        arg2  = fromJust marg2
         err   = "Error parsing arguments for stack machine: "
 
 
@@ -77,9 +80,7 @@ isValidISMState r alphabet regs
 
 
 isISMAlphabet :: String -> Bool
-isISMAlphabet alphabet =
-    not $ null alphabet &&
-    all (flip elem $ ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9']) alphabet
+isISMAlphabet = isSMAlphabet
 
 
 isEmptyISM :: Int -> Int -> MachineState -> Bool
