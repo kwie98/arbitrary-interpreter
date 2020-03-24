@@ -7,16 +7,22 @@ import ArbitraryInterpreter.Parse.ParseProgram
 import ArbitraryInterpreter.Util.BDTVector
 import Data.Maybe (isJust)
 import qualified Data.HashMap.Strict as Map
+import qualified Data.Vector as Vector (filter)
 
--- after parsing all trees, check that all leaves are existing state names and
--- all inner nodes are predicates
--- also check that all operations are valid in the given MoC
--- TODO check structure of all BDTs? (everything reachable, always two children or none)
+-- checks a parsed program for validity and executability. In detail, it does
+-- the following checks on all BDTs of the program: Whether all leaves are
+-- program state names, whether all branches are valid predicates, whether all
+-- trees are complete (each branch has exactly two children) and whether all
+-- vectors describing trees actually are trees (each node is reachable from the
+-- root). Additionally, all the operations from each program state are checked
+-- to be valid within the given MoC.
 preExecCheck :: Program -> MoC -> Bool
 preExecCheck prog moc =
     allLeavesStates trees states &&
     allBranchesPreds trees moc &&
-    allOpsValid ops moc
+    allOpsValid ops moc &&
+    allTreesComplete trees &&
+    allNodesReachable trees
     where
         ops    = map (fst) $ Map.elems prog
         trees  = map (snd) $ Map.elems prog
@@ -49,6 +55,27 @@ allOpsValid [] _ = True
 allOpsValid (op:ops) moc
     | isOp moc op = allOpsValid ops moc
     | otherwise = error $ err ++ "Program mentions invalid operation " ++ op
+
+
+-- assert that all BDTs are complete, meaning that every branch has exactly two
+-- children
+allTreesComplete :: [BDTVector] -> Bool
+allTreesComplete [] = True
+allTreesComplete (tree:trees)
+    | isComplete tree = allTreesComplete trees
+    | otherwise = error $ err ++ "Program has incomplete BDT: " ++ show tree
+
+
+-- assert that the number of reachable nodes (decendants of the root node)
+-- equals the amount of non-null values in the vector for each tree
+allNodesReachable :: [BDTVector] -> Bool
+allNodesReachable [] = True
+allNodesReachable (tree:trees)
+    | reachable == nodes = allNodesReachable trees
+    | otherwise = error $ err ++ "Program has invalid BDT (unreachable nodes): " ++ show tree
+    where
+        reachable = countReachable tree
+        nodes     = length $ Vector.filter (not . null) tree
 
 
 isOp :: MoC -> OpName -> Bool

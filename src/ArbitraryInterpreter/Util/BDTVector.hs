@@ -3,6 +3,8 @@ module ArbitraryInterpreter.Util.BDTVector
 , isNode
 , isLeaf
 , isBranch
+, isComplete
+, countReachable
 , leaves
 , branches
 ) where
@@ -45,15 +47,39 @@ isBranch :: BDTVector -> Int -> Bool
 isBranch bdt i = (isNode bdt i) && (not $ isLeaf bdt i)
 
 
+-- check that every branch has two children
+isComplete :: BDTVector -> Bool
+isComplete bdt = isComplete' bdt 0
+
+
+isComplete' :: BDTVector -> Int -> Bool
+isComplete' bdt i
+    | isLeaf bdt i   = True
+    | isBranch bdt i = isComplete' bdt (i * 2 + 1) && isComplete' bdt (i * 2 + 2)
+    | otherwise      = False -- non-node reached
+
+
+countReachable :: BDTVector -> Int
+countReachable bdt = countReachable' bdt 0
+
+
+countReachable' :: BDTVector -> Int -> Int
+countReachable' bdt i
+    | isLeaf bdt i   = 1
+    | isBranch bdt i = 1 + countReachable' bdt (i * 2 + 1)
+                         + countReachable' bdt (i * 2 + 2)
+    | otherwise      = 0
+
+
 leaves :: BDTVector -> [String]
 leaves bdt = leaves' bdt 0
 
 
 leaves' :: BDTVector -> Int -> [String]
 leaves' bdt i
-    | isLeaf bdt i = [bdt Vector.! i]
-    | isNode bdt i = leaves' bdt (i * 2 + 1) ++ leaves' bdt (i * 2 + 2)
-    | otherwise    = []
+    | isLeaf bdt i   = [bdt Vector.! i]
+    | isBranch bdt i = leaves' bdt (i * 2 + 1) ++ leaves' bdt (i * 2 + 2)
+    | otherwise      = []
 
 
 branches :: BDTVector -> [String]
