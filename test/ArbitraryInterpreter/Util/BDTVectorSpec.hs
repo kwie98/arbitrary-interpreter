@@ -1,4 +1,6 @@
-module ArbitraryInterpreter.Util.BDTVectorSpec (spec) where
+module ArbitraryInterpreter.Util.BDTVectorSpec
+( spec
+) where
 
 import ArbitraryInterpreter.Util.BDTVector
 import Test.Hspec

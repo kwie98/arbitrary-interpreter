@@ -8,9 +8,9 @@ import Control.Monad
 import Text.Read
 
 main = do
-    -- putStrLn "Enter program file location: "
-    -- path <- getLine
-    let path = "C:\\Users\\Konrad\\Documents\\Uni\\arbitrary-interpreter\\test\\program1.txt"
+    putStrLn "Enter program file location: "
+    path <- getLine
+    -- let path = "C:\\Users\\Konrad\\Documents\\Uni\\arbitrary-interpreter\\test\\program1.txt"
     putStrLn "Enter input machine state: "
     mstate <- getLine
     foo path mstate
