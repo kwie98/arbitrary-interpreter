@@ -48,6 +48,7 @@ makeVariations s = [unlines $ deleteAt i plines | i <- [0 .. (length plines - 1)
         plines = filter (not . null) $ lines s
 
 
+-- delete element at given index
 deleteAt :: Int -> [a] -> [a]
 deleteAt _ []     = []
 deleteAt i (a:as)
