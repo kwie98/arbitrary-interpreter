@@ -72,7 +72,7 @@ isValidSMState :: Int -> String -> MachineState -> Bool
 isValidSMState r alphabet regs
     | isNothing regs'             = False
     | not $ isSMAlphabet alphabet = False
-    | length regs'' == r          = and (map (all (flip elem alphabet)) regs'') -- check that all registers only have valid symbols
+    | length regs'' == r          = and (map (all (\s -> s `elem` alphabet)) regs'') -- check that all registers only have valid symbols
     | otherwise                   = False
         where
             regs'  = readMaybe regs :: Maybe [String]
