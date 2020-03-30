@@ -11,8 +11,6 @@ import System.FilePath ((</>))
 import System.IO
 import Test.Hspec
 
--- cpath = "C:\\Users\\Konrad\\Documents\\Uni\\arbitrary-interpreter\\test\\programs\\correct\\"
--- fpath = "C:\\Users\\Konrad\\Documents\\Uni\\arbitrary-interpreter\\test\\programs\\faulty\\"
 cpath = "test" </> "programs" </> "correct"
 fpath = "test" </> "programs" </> "faulty"
 
