@@ -1,0 +1,11 @@
+#ism 1 "AÐ"
+
+Start:
+  R1=_
+    TakeOne
+    End
+
+TakeOne / R1-:
+  R1=_
+    TakeOne
+    End

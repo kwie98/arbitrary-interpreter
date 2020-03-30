@@ -25,6 +25,7 @@ dependencies:
 - unordered-containers
 - hspec
 - directory
+- filepath
 
 library:
   source-dirs: src
