@@ -1,5 +1,0 @@
-\babel@toc {ngerman}{}
-\contentsline {section}{\numberline {1}Kapitel 1}{2}{section.3}% 
-\contentsline {section}{\numberline {2}Kapitel 2}{2}{section.4}% 
-\contentsline {section}{\numberline {3}Fazit}{2}{section.5}% 
-\contentsline {section}{\numberline {4}Anhang}{3}{section.6}% 
