@@ -1,0 +1,130 @@
+%---configure pagelayout
+\KOMAoptions{ % read documentation for KOMAScript providing the documentclass scrartcl
+DIV=11,
+BCOR=0mm,
+paper=a4,
+fontsize=11pt,
+parskip=half,
+twoside=false,
+titlepage=true
+}
+\usepackage{pdfpages}
+\usepackage[ %Set linespacing
+singlespacing %onehalfspacing,doublespacing
+]{setspace} 
+
+\usepackage{pgffor, ifthen,tikz}
+\usepackage{lastpage}
+\usepackage[headsepline,automark,komastyle,nouppercase]{scrpage2} %Configure headline and footer
+
+\clearscrheadings
+\setlength{\headheight}{2.5\baselineskip}
+\ihead[]{\authA \, (\matA) \\ \authB \, (\matB)} 
+\ohead{Gruppe \grpnr}
+\cfoot[]{\thepage\ von \pageref*{LastPage}}
+\usepackage[left=2cm,right=2cm,top=1.5cm,bottom=1cm,includeheadfoot]{geometry}
+
+
+%better positioning of floatings
+\usepackage{float}
+\renewcommand{\floatpagefraction}{.75} % standard: .5
+\renewcommand{\textfraction}{.1} % standard: .2
+\renewcommand{\topfraction}{.8} % standard: .7
+\renewcommand{\bottomfraction}{.5} % standard: .3
+\setcounter{topnumber}{3} % standard: 2
+\setcounter{bottomnumber}{2} % standard: 1
+\setcounter{totalnumber}{5} % standard: 3
+
+
+%---Language and umlauts
+\usepackage[utf8]{inputenc} %Set UTF-8 encoding, enables ä,ö,ü etc.
+\usepackage[ngerman]{babel} %Set document language to ngerman (new german)  
+\usepackage[% improved hyphenation
+expansion=true,
+protrusion=true
+]{microtype}
+
+
+%---Mathmatics (AMS packages )
+\usepackage{amsmath} %generell math enviorments e.g. align
+\usepackage{amsfonts}
+\usepackage{amssymb} 
+\usepackage{amsthm} %math theorems
+\usepackage{upgreek}%provide special form of greek letters e.g. \upmu
+
+
+%---Units
+\usepackage[decimalsymbol=comma,separate-uncertainty = true]{siunitx}
+
+
+%---tables and imgaes
+\usepackage{graphicx} %provide \includegraphics[options]{name}
+\usepackage{epstopdf} %enable the use of eps-graphics
+\usepackage[hypcap]{caption} %captions out of floating-enviorments(figure,table)
+\usepackage{booktabs} %extra lines in tabulars
+\usepackage{flafter} %Place floating-enviorments after references.
+\usepackage[ %
+section %latest ancor for floating-enviorments
+]{placeins}
+
+
+%---Hyperlinks
+\usepackage{hyperref} %create table of content and references as links
+\hypersetup{
+%
+%Colors 
+colorlinks=true, 
+breaklinks=true, 
+citecolor=red, 
+linkcolor=blue, 
+menucolor=red, 
+urlcolor=cyan,
+%
+%pdf-bookmarks
+bookmarksopen=false, 
+bookmarksopenlevel=0,
+% 
+%pdf-data
+% pdftitle={\titel}, 
+% pdfauthor={\writer}, 
+% pdfcreator={\writer}, 
+% pdfsubject={\titel}, 
+% pdfkeywords={\titel} 
+%
+%misc
+plainpages=false,% zur korrekten Erstellung der Bookmarks 
+hypertexnames=false,% zur korrekten Erstellung der Bookmarks 
+% hyperindex=true,
+}
+\newcommand{\notes}[3][\empty]{%
+	\foreach \n in {1,...,#2}{%
+		\ifthenelse{\equal{#1}{\empty}}
+		{\rule{#3}{0.5pt}\\}
+		{\rule{#3}{0.5pt}\vspace{#1}\\}
+	}
+}
+
+
+%Abbildungsname umbenennen ("Abb." statt "Abbildung")
+\renewcaptionname{ngerman}{\figurename}{Abb.}
+
+
+%Schaltkreise
+\usepackage[]{circuitikz}
+\usepackage{tikz}
+
+
+%Subsubsubsections
+\newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+
+% schöne eingekreiste Zahlen
+\newcommand{\kreis}[1]{\,\unitlength1ex\begin{picture}(2.5,2.5)%
+\put(0.75,0.75){\circle{2.5}}\put(0.75,0.75){\makebox(0,0){#1}}\end{picture}}
+% der Befehl ist dann \kreis{3} (die unschöne Variante ist \textcircled{1})
+
+
+%in Formeln durchstreichen (kürzen)
+\usepackage{cancel}

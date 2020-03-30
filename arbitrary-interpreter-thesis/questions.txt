@@ -1,0 +1,4 @@
+- genauer Titel der Arbeit (generell dieser Zettel)
+- beliebige MoCs -> werden wirklich jegliche Modelle von der Meta-Sprache und der MoC-Definition unterstützt?
+- Name der (Meta?-)Programmiersprache
+- Fehlerbehandlung beim parsen

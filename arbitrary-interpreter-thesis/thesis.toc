@@ -1,0 +1,4 @@
+\contentsline {section}{\numberline {1}Introduction}{1}%
+\contentsline {subsection}{\numberline {1.1}Models of Computation}{1}%
+\contentsline {subsubsection}{\numberline {1.1.1}A Simple Stack Machine}{2}%
+\contentsline {subsection}{\numberline {1.2}Machine Programs}{3}%

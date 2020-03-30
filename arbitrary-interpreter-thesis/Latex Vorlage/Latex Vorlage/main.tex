@@ -1,0 +1,55 @@
+%!TeX encoding=utf8
+\documentclass[ngerman]{scrartcl}
+
+\newcommand{\authA}{Autor 1}
+\newcommand{\matA}{Matrikelnummer 1}
+\newcommand{\authB}{Autor 2}
+\newcommand{\matB}{Matrikelnummer 2}
+\newcommand{\grpnr}{Gruppennummer}
+\newcommand{\datum}{Datum hier eintragen}
+\input{System/options.tex}
+%---
+
+%---document
+\begin{document}
+\includepdf{SYSTEM/Deckblatt.pdf}
+
+% % %Table of Contents
+\pagenumbering{roman} 
+
+
+% % % Titelseite
+\title{Titel hier}
+\date{%
+    \large Gruppe \grpnr \\[0.5cm]%
+    \Large \datum
+}
+\author{
+  \authA \\ \small \matA \and 
+  \authB \\ \small \matB}
+\maketitle
+
+
+% % % Einleitung
+\input{Kapitel/Einleitung.tex}
+
+
+% % %Table of Contents
+\tableofcontents
+% % %
+
+\pagestyle{scrheadings} %re-enable headings and footer
+% % %Content
+\pagenumbering{arabic}
+
+
+% % % Kapitel-Input
+\newpage
+\input{Kapitel/Kapitel_1.tex}
+\input{Kapitel/Kapitel_2.tex}
+\input{Kapitel/Fazit.tex}
+\newpage
+\input{Kapitel/Anhang.tex}
+
+% % %
+\end{document}
