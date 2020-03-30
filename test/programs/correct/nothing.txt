@@ -1,0 +1,7 @@
+#sm 1 "A"
+
+Start:
+    Z1
+
+Z1 / NOP:
+    End

@@ -2,3 +2,12 @@
 - beliebige MoCs -> werden wirklich jegliche Modelle von der Meta-Sprache und der MoC-Definition unterstützt?
 - Name der (Meta?-)Programmiersprache
 - Fehlerbehandlung beim parsen
+
+TODO:
+- nicht möglich: Lambda-Kalkül, Boolsche Netze (?), Echtzeitsysteme
+- Programmbeschreibung: Erst Bäume zeigen, dann Programm in schriftlicher Form
+
+- Format für Multiprogramme, MOC def (siehe faulty/newsyntax.txt)
+- Unterprogramme (mehrere Progs in einem file, Spezialfall-Aufruf mit permutiertem Maschinenzustand bei cm, sm)
+- Interface für Nutzung: Parameter geben Programmpfad und StartMState an, Optionen um nur Ergebnis oder ganzen Ablauf und Trace anzuzeigen
+- weitere MoCs (Grundlagen der TheoInf -> Kellerautomat, LBA, TM, instruction set machine) -> später!

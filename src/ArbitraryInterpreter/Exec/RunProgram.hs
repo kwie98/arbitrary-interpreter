@@ -11,7 +11,7 @@ import qualified Data.HashMap.Strict as Map
 import qualified Data.Vector as Vector
 
 -- sequence of predicates that were evaluated to reach the next program state
-type PredicateSequence = [String]
+type PredicateSequence = [String] -- [(String, Bool)]
 
 -- Execute program for one step, not running preExecCheck
 -- Throw an error when trying to evaluate "End" state
