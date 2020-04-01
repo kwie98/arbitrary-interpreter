@@ -16,6 +16,9 @@ import qualified Data.Vector as Vector (filter)
 -- vectors describing trees actually are trees (each node is reachable from the
 -- root). Additionally, all the operations from each program state are checked
 -- to be valid within the given MoC.
+-- TODO (?):
+-- state names can only consist of alphanumerics, predicates and operations can
+-- additionally include special characters such as '+', '-', '*', '/', etc.
 preExecCheck :: Program -> MoC -> Bool
 preExecCheck prog moc =
     allLeavesStates trees states &&
