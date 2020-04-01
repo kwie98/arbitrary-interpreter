@@ -30,27 +30,27 @@ invertedStackMachine args
 buildISM :: Int -> String -> MoC
 buildISM numRegs alphabet = MoC (isValidISMState numRegs alphabet) ops preds
     where
-        ops opCode
+        ops opname
             | valid && isPop  = Just (\regs -> (popISM numRegs r regs))
             | valid           = Just (\regs -> (pushISM numRegs r regs s))
-            | opCode == "NOP" = Just id
+            | opname == "NOP" = Just id
             | otherwise       = Nothing
                 where
-                    valid = elem opCode $ validISMOperations numRegs alphabet
-                    isPop = last opCode == '-' -- whether operation code describes a pop operation on a register
-                    r     = if last opCode == '-' -- register
-                                then (read . init $ tail opCode) :: Int
-                                else (read . init . init $ tail opCode) :: Int
-                    s     = last opCode -- symbol
-        preds predCode
+                    valid = elem opname $ validISMOperations numRegs alphabet
+                    isPop = last opname == '-' -- whether operation code describes a pop operation on a register
+                    r     = if last opname == '-' -- register
+                                then (read . init $ tail opname) :: Int
+                                else (read . init . init $ tail opname) :: Int
+                    s     = last opname -- symbol
+        preds predname
             | valid && isEmptyCheck = Just $ isEmptyISM numRegs r
             | valid                 = Just $ isSymbolISM numRegs r s
             | otherwise             = Nothing
                 where
-                    valid        = elem predCode $ validISMPredicates numRegs alphabet
-                    isEmptyCheck = last predCode == '_' -- whether predicate code describes an empty check operation on a register
-                    r            = (read . init . init $ tail predCode) :: Int -- register
-                    s            = last predCode -- symbol
+                    valid        = elem predname $ validISMPredicates numRegs alphabet
+                    isEmptyCheck = last predname == '_' -- whether predicate code describes an empty check operation on a register
+                    r            = (read . init . init $ tail predname) :: Int -- register
+                    s            = last predname -- symbol
 
 
 -- return a list of all possible Operations for a stack machine with numRegs registers and the given alphabet

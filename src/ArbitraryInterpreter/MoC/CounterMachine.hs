@@ -24,22 +24,22 @@ buildCM numRegs = MoC (isValidCMState numRegs) ops preds
     where
         getReg = (getCMRegisterValue numRegs)
         setReg = (setCMRegisterValue numRegs)
-        ops opCode
+        ops opname
             | valid && isAdd  = Just (\ms -> (setReg r ms ((getReg r ms) + 1)))
             | valid           = Just (\ms -> (setReg r ms (max 0 ((getReg r ms) - 1))))
-            | opCode == "NOP" = Just id
+            | opname == "NOP" = Just id
             | otherwise       = Nothing
             where
                 -- check String representation of operation
-                valid = elem opCode $ validCMOperations numRegs
-                isAdd = elem '+' opCode
-                r = (read . init . init $ tail opCode) :: Int
-        preds predCode
+                valid = elem opname $ validCMOperations numRegs
+                isAdd = elem '+' opname
+                r = (read . init . init $ tail opname) :: Int
+        preds predname
             | valid     = Just (\ms -> ((getReg r ms) == 0))
             | otherwise = Nothing
             where
-                valid = elem predCode $ validCMPredicates numRegs
-                r = (read . init . init $ tail predCode) :: Int
+                valid = elem predname $ validCMPredicates numRegs
+                r = (read . init . init $ tail predname) :: Int
 
 
 -- return a list of all possible Operations for a counter machine with numRegs registers
