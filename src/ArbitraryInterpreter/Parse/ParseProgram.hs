@@ -8,7 +8,8 @@ import Data.List
 import Data.Char
 import qualified Data.HashMap.Strict as Map
 
--- RELIES ON CLEANED UP PROGRAM FILE (removed trailing whitespace, comments, empty lines)
+-- RELIES ON CLEANED UP PROGRAM TEXT (removed trailing whitespace, comments,
+-- empty lines, no MoC definitions and program definitions)
 parseProgram :: [String] -> Program
 parseProgram plines = buildProgram . validateStructure $ collapseTrees plines
 -- ignore empty lines DONE
