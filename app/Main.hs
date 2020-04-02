@@ -1,10 +1,12 @@
 module Main where
 
 import ArbitraryInterpreter.Parse.ParseMoC
-import ArbitraryInterpreter.Parse.ParseProgram
+import ArbitraryInterpreter.Parse.ParseCollection
 import ArbitraryInterpreter.Exec.RunProgram
-import System.IO
+import Data.HashMap.Strict (elems)
+import Data.List (sort)
 import Control.Monad
+import System.IO
 import Text.Read
 
 main = do
@@ -20,15 +22,16 @@ foo :: String -> String -> IO ()
 foo path mstate = forever $ do
     putStrLn "Enter number of steps to compute: "
     steps <- fmap (readMaybe) getLine :: IO (Maybe Int)
-    prog <- readFile path
-    let res = run steps (parseMoC prog) (parseProgram prog) mstate
+    progText <- readFile path
+    let (moc, progs) = parseCollection progText
+        res = run steps moc (head . sort $ elems progs) mstate
     putStrLn $ fst res ++ " " ++ snd res
 
 
-bar :: String -> String -> IO ()
-bar path mstate = do
-    prog <- readFile path
-    print $ evalSafe (parseMoC prog) (parseProgram prog) "Start" mstate
+-- bar :: String -> String -> IO ()
+-- bar path mstate = do
+--     prog <- readFile path
+--     print $ evalSafe (parseMoC prog) (parseProgram prog) "Start" mstate
 
 t = "    R1L\n\
     \        R1A\n\
@@ -42,8 +45,11 @@ t = "    R1L\n\
 
 t2 = "    Z3\n"
 
-program2 = "#sm, 2 registers\n\
-           \Z2C / R2FC:\n\
-           \    Z3\n"
+program2 = "#MOC CM 2\n\
+           \#PROGRAM a\n\
+           \Start:\n\
+           \  Z1\n\
+           \Z1 / NOP:\n\
+           \  End\n"
 
 program3 = "#sm, 2 registers"

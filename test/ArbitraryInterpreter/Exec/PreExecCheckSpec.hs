@@ -4,35 +4,35 @@ module ArbitraryInterpreter.Exec.PreExecCheckSpec
 
 import ArbitraryInterpreter.Exec.PreExecCheck
 import ArbitraryInterpreter.Parse.ParseMoC
-import ArbitraryInterpreter.Parse.ParseProgram
+import ArbitraryInterpreter.Parse.ParseCollection
+import Data.List (sort)
 import Control.Exception (evaluate)
 import System.Directory
 import System.FilePath ((</>))
 import System.IO
 import Test.Hspec
 
+-- paths to testing programs
 cpath = "test" </> "programs" </> "correct"
 fpath = "test" </> "programs" </> "faulty"
-
-
 
 spec :: Spec
 spec = do
     correctPrograms <- runIO $ readFiles cpath
     faultyPrograms  <- runIO $ readFiles fpath
-    let programVars = makeVariations $ head correctPrograms
+    let variations = concat $ map (makeVariations) correctPrograms
 
-    describe "preExecCheck" $ do
+    describe "preExecChecks" $ do
         mapM_ (it "lets correct programs pass") $
-            [preExecCheck (parseProgram x) (parseMoC x) `shouldBe` True | x <- correctPrograms]
+            [(uncurry preExecChecks $ parseCollection x) `shouldBe` True | x <- correctPrograms]
 
-    describe "preExecCheck" $ do
-        mapM_ (\x -> it "doesn't let faulty variations of correct programs pass" $ do x) $
-            [(evaluate $ preExecCheck (parseProgram x) (parseMoC x)) `shouldThrow` anyErrorCall | x <- programVars]
+    describe "preExecChecks" $ do
+        mapM_ (\expectation -> it "doesn't let faulty variations of correct programs pass" $ do expectation) $
+            [(evaluate $ uncurry preExecChecks $ parseCollection x) `shouldThrow` anyErrorCall | x <- variations]
 
-    describe "preExecCheck" $ do
-        mapM_ (\x -> it "doesn't let faulty programs pass" $ do x) $
-            [(evaluate $ preExecCheck (parseProgram x) (parseMoC x)) `shouldThrow` anyErrorCall | x <- faultyPrograms]
+    describe "preExecChecks" $ do
+        mapM_ (\expectation -> it "doesn't let faulty programs pass" $ do expectation) $
+            [(evaluate $ uncurry preExecChecks $ parseCollection x) `shouldThrow` anyErrorCall | x <- faultyPrograms]
 
 
 -- return list of all programs in given dir
@@ -47,7 +47,7 @@ readFiles path = do
 makeVariations :: String -> [String]
 makeVariations s = [unlines $ deleteAt i plines | i <- [0 .. (length plines - 1)]]
     where
-        plines = filter (not . null) $ lines s
+        plines = trimProgramText s
 
 
 -- delete element at given index

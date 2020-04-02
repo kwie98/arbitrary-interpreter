@@ -26,6 +26,7 @@ dependencies:
 - hspec
 - directory
 - filepath
+- split
 
 library:
   source-dirs: src

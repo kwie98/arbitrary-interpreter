@@ -3,19 +3,14 @@ module ArbitraryInterpreter.Parse.ParseProgram
 ) where
 
 import ArbitraryInterpreter.Defs
-import ArbitraryInterpreter.MoC.CounterMachine
-import ArbitraryInterpreter.MoC.InvertedStackMachine
 import ArbitraryInterpreter.Util.BDTVector
-import ArbitraryInterpreter.Parse.ReadProgramUtil
 import Data.List
 import Data.Char
 import qualified Data.HashMap.Strict as Map
 
-parseProgram :: String -> Program
-parseProgram text = buildMap body
-    where
-        plines  = prepareProgramText text
-        body    = validateStructure . collapseTrees $ tail plines
+-- RELIES ON CLEANED UP PROGRAM FILE (removed trailing whitespace, comments, empty lines)
+parseProgram :: [String] -> Program
+parseProgram plines = buildProgram . validateStructure $ collapseTrees plines
 -- ignore empty lines DONE
 -- first line with leading # defines MoC DONE
 -- #%moc, %i registers (maybe other auxiliary info?) DONE
@@ -43,21 +38,22 @@ validateStructure (p1:p2:plines) -- always needs to be a pair of a state definit
 
 -- put state names and corresponding BDTs into a map
 -- RELIES ON VALIDATED PROGRAM STRUCTURE
-buildMap :: [String] -> Map.HashMap String (String, BDTVector)
-buildMap [] = Map.empty
-buildMap (def:tree:plines) = Map.unionWithKey throwError single (buildMap plines)
+buildProgram :: [String] -> Map.HashMap String (String, BDTVector)
+buildProgram [] = Map.empty
+buildProgram (def:tree:plines) = Map.unionWithKey dupErr single (buildProgram plines)
     where
-        throwError k _ _ = error $ err ++ "Duplicate state definition for state " ++ k
-        single           = Map.singleton stateName (operation, bdtVector)
-        stateName        = getState def
-        operation        = getOp def
-        bdtVector        = treeToVector $ read tree
-        err              = "Error parsing program body: "
+        dupErr k _ _ = error $ err ++ "Duplicate state definition for state " ++ k
+        single       = Map.singleton stateName (operation, bdtVector)
+        stateName    = getState def
+        operation    = getOp def
+        bdtVector    = treeToVector $ read tree
+        err          = "Error parsing program body: "
 
 
--- check if a line of the program is a state definition
+-- checks if a line of the program is a state definition
+-- ProgramState / OpName:
 isStateDef :: String -> Bool
-isStateDef ""   = False
+isStateDef "" = False
 isStateDef line
     | isStartDef line        = True
     | getState line == "End" = False -- states cannot be named "End"
@@ -68,12 +64,12 @@ isStateDef line
         line'      = filter (not . isSpace) line
 
 
--- check if a line of the program is the state definition for the start state
+-- checks if a line of the program is the state definition for the start state
 isStartDef :: String -> Bool
 isStartDef line = filter (not . isSpace) line == "Start:"
 
 
--- from a state definition, extract the state name
+-- from a state definition, extracts the state name
 getState :: String -> String
 getState def
     | isStartDef def = "Start"
@@ -82,7 +78,7 @@ getState def
         def' = filter (not . isSpace) def
 
 
--- from a state definition, extract the operation
+-- from a state definition, extracts the operation
 getOp :: String -> String
 getOp def
     | isStartDef def = "NOP"
@@ -110,7 +106,7 @@ collapseTrees plines@(x:xs)
 -- indent is.
 collapse :: [String] -> String
 collapse [] = []
-collapse plines@(pline@(c:_):_) -- first character of first line
+collapse plines@(pline@(c:_):_) -- c is first character of first line
     | c == '\t' = init . unlines $ map removeFirstTab plines
     | c == ' '  = init . unlines $ map (removeFirstTab . convertSpaces num) plines
     | otherwise = error $ err ++ "Root node of tree is not indented: " ++ unlines plines

@@ -10,7 +10,8 @@ type OpName       = String
 type PredName     = String
 type BDTVector    = Vector String -- includes PredName and ProgramState
 
-type Program = HashMap ProgramState (OpName, BDTVector)
+type Program      = HashMap ProgramState (OpName, BDTVector)
+type ProgramName  = String
 
 -- string representation of the internal state of an arbitrary model of computation (MoC)
 type MachineState = String

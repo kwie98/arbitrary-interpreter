@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e49531ff4c86c51e33c41679b3c95e80694f425e05355d29c72ac87aae8c176f
+-- hash: 05739ea544439019af8f7dc3c5e99d528efd3a0e28407ed45246caa0e2be7e1d
 
 name:           arbitrary-interpreter
 version:        0.1.0.0
@@ -33,9 +33,9 @@ library
       ArbitraryInterpreter.MoC.CounterMachine
       ArbitraryInterpreter.MoC.InvertedStackMachine
       ArbitraryInterpreter.MoC.StackMachine
+      ArbitraryInterpreter.Parse.ParseCollection
       ArbitraryInterpreter.Parse.ParseMoC
       ArbitraryInterpreter.Parse.ParseProgram
-      ArbitraryInterpreter.Parse.ReadProgramUtil
       ArbitraryInterpreter.Util.BDTVector
       ArbitraryInterpreter.Util.LabeledTree
       ArbitraryInterpreter.Util.SPLib
@@ -48,6 +48,7 @@ library
     , directory
     , filepath
     , hspec
+    , split
     , unordered-containers
     , vector
   default-language: Haskell2010
@@ -65,6 +66,7 @@ executable arbitrary-interpreter-exe
     , directory
     , filepath
     , hspec
+    , split
     , unordered-containers
     , vector
   default-language: Haskell2010
@@ -86,6 +88,7 @@ test-suite arbitrary-interpreter-test
     , directory
     , filepath
     , hspec
+    , split
     , unordered-containers
     , vector
   default-language: Haskell2010

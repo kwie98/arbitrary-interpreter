@@ -1,5 +1,6 @@
 module ArbitraryInterpreter.Exec.PreExecCheck
 ( preExecCheck
+, preExecChecks
 ) where
 
 import ArbitraryInterpreter.Defs
@@ -19,8 +20,8 @@ import qualified Data.Vector as Vector (filter)
 -- TODO (?):
 -- state names can only consist of alphanumerics, predicates and operations can
 -- additionally include special characters such as '+', '-', '*', '/', etc.
-preExecCheck :: Program -> MoC -> Bool
-preExecCheck prog moc =
+preExecCheck :: MoC -> Program -> Bool
+preExecCheck moc prog =
     allLeavesStates trees states &&
     allBranchesPreds trees moc &&
     allOpsValid ops moc &&
@@ -30,6 +31,13 @@ preExecCheck prog moc =
         ops    = map (fst) $ Map.elems prog
         trees  = map (snd) $ Map.elems prog
         states = "End" : Map.keys prog
+
+
+-- same as preExecCheck, but for a collection of programs with a common MoC.
+-- Does not check whether the MoC actually includes all programs as operations,
+-- only those which are actually used.
+preExecChecks :: MoC -> Map.HashMap ProgramName Program -> Bool
+preExecChecks moc programs = all (\p -> preExecCheck moc p) programs
 
 
 -- assert that all leaves in every given BDT are included in the given state list

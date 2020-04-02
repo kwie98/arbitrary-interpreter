@@ -42,7 +42,7 @@ eval moc program pstate mstate = case pstate' of
 -- Executes program for one step after running preExecCheck
 -- Should the program not be valid, an error is thrown
 evalSafe :: MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState, PredicateSequence)
-evalSafe moc program pstate mstate = case preExecCheck program moc of
+evalSafe moc program pstate mstate = case preExecCheck moc program of
     True  -> eval moc program pstate mstate
     False -> error $ err ++ "Invalid program"
 
@@ -77,7 +77,7 @@ evalBDT' moc bdt i mstate
 
 -- run a program for x steps, first asserting that the program is valid for the given MoC
 run :: Maybe Int -> MoC -> Program -> MachineState -> (ProgramState, MachineState)
-run i moc program mstate = case preExecCheck program moc of
+run i moc program mstate = case preExecCheck moc program of
     False -> error $ err ++ "Invalid program"
     True  -> run' i moc program "Start" mstate
 
