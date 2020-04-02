@@ -1,5 +1,6 @@
-#sm 1 "A"
+#MOC sm 1 "A"
 
+#PROGRAM NOTHING
 Start:
     Z1
 

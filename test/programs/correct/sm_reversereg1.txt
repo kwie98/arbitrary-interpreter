@@ -1,6 +1,7 @@
-#sm 2 "ABC"
+#MOC SM 2 "ABC"
 
-Start:
+#PROGRAM REVERSEREG1
+Start: // this is a comment
     R2=_
         Z1
         R1=_
@@ -13,6 +14,8 @@ Start:
                 Z2A
             End
 
+// comments are great!
+// this one describes the state below:
 Z1 / R2-:
     R2=_
         Z1

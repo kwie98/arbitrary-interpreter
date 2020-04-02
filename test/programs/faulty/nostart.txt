@@ -1,6 +1,7 @@
-#ism 1 "AAABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+#MOC ISM 1 "AAABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
-Estart:
+#PROGRAM EMPTY1
+Estart: // manipulated Start state name
   R1=_
     TakeOne
     End

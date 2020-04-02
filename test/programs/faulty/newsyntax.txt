@@ -1,7 +1,0 @@
-#MOC SM 3 "ABC"
-
-#PROGRAM p1
-// impl
-
-#PROGRAM p2
-// impl
