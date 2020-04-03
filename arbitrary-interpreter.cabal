@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 05739ea544439019af8f7dc3c5e99d528efd3a0e28407ed45246caa0e2be7e1d
+-- hash: 21b96b4bd87d032d838059f7bcc26d6c1060aa4cab3e10ad0b0912fa190a611e
 
 name:           arbitrary-interpreter
 version:        0.1.0.0
@@ -45,6 +45,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , containers
     , directory
     , filepath
     , hspec
@@ -63,6 +64,7 @@ executable arbitrary-interpreter-exe
   build-depends:
       arbitrary-interpreter
     , base >=4.7 && <5
+    , containers
     , directory
     , filepath
     , hspec
@@ -85,6 +87,7 @@ test-suite arbitrary-interpreter-test
   build-depends:
       arbitrary-interpreter
     , base >=4.7 && <5
+    , containers
     , directory
     , filepath
     , hspec

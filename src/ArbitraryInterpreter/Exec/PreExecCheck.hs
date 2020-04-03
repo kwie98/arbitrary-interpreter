@@ -7,7 +7,8 @@ import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Parse.ParseProgram
 import ArbitraryInterpreter.Util.BDTVector
 import Data.Maybe (isJust)
-import qualified Data.HashMap.Strict as Map
+import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Map.Strict as Map
 import qualified Data.Vector as Vector (filter)
 
 -- checks a parsed program for validity and executability. In detail, it does
@@ -28,15 +29,15 @@ preExecCheck moc prog =
     allTreesComplete trees &&
     allNodesReachable trees
     where
-        ops    = map (fst) $ Map.elems prog
-        trees  = map (snd) $ Map.elems prog
-        states = "End" : Map.keys prog
+        ops    = map (fst) $ HashMap.elems prog
+        trees  = map (snd) $ HashMap.elems prog
+        states = "End" : HashMap.keys prog
 
 
 -- same as preExecCheck, but for a collection of programs with a common MoC.
 -- Does not check whether the MoC actually includes all programs as operations,
 -- only those which are actually used.
-preExecChecks :: MoC -> Map.HashMap ProgramName Program -> Bool
+preExecChecks :: MoC -> Map.Map ProgramName Program -> Bool
 preExecChecks moc programs = all (\p -> preExecCheck moc p) programs
 
 

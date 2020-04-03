@@ -3,7 +3,7 @@ module Main where
 import ArbitraryInterpreter.Parse.ParseMoC
 import ArbitraryInterpreter.Parse.ParseCollection
 import ArbitraryInterpreter.Exec.RunProgram
-import Data.HashMap.Strict (elems)
+import Data.Map.Strict (elems)
 import Data.List (sort)
 import Control.Monad
 import System.IO

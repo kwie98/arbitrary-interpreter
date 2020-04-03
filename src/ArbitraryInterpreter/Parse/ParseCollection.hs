@@ -10,12 +10,14 @@ import ArbitraryInterpreter.Exec.RunProgram
 import Data.List (dropWhileEnd)
 import Data.List.Split (splitOn)
 import Data.Char (isSpace)
-import qualified Data.HashMap.Strict as Map
+import qualified Data.Map.Strict as Map
 
 -- Parses multiple programs in one file, all using the same MoC
 -- Expanded MoC includes name of each program as an operation
+-- Programs are saved in a normal map (as opposed to BDTs, which are saved in
+-- HashMaps) since ordering of programs does matter here
 -- TODO empty program?
-parseCollection :: String -> (MoC, Map.HashMap ProgramName Program)
+parseCollection :: String -> (MoC, Map.Map ProgramName Program)
 parseCollection text = (expandedMoC, programs)
     where
         trimmedText = trimProgramText text
@@ -28,7 +30,7 @@ parseCollection text = (expandedMoC, programs)
 
 
 -- makes pairs of program definitions and their respective lines
-collapsePrograms :: [String] -> Map.HashMap ProgramName Program
+collapsePrograms :: [String] -> Map.Map ProgramName Program
 collapsePrograms [] = Map.empty
 collapsePrograms (fl1:flines) = case isProgramDef fl1 of
     True  -> Map.unionWithKey dupErr single (collapsePrograms $ dropWhile f flines)
