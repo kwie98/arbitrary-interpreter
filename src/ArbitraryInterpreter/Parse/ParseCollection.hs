@@ -6,6 +6,7 @@ module ArbitraryInterpreter.Parse.ParseCollection
 import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Parse.ParseMoC
 import ArbitraryInterpreter.Parse.ParseProgram
+import ArbitraryInterpreter.Exec.RunProgram
 import Data.List (dropWhileEnd)
 import Data.List.Split (splitOn)
 import Data.Char (isSpace)
@@ -19,7 +20,9 @@ parseCollection text = (expandedMoC, programs)
     where
         trimmedText = trimProgramText text
         definedMoC = parseMoC $ head trimmedText
-        expandedMoC = definedMoC -- TODO add program names
+        expandedMoC = definedMoC -- Map.foldlWithKey'
+            -- (\moc pname p -> addOperation moc ('$':pname) (run Nothing))
+            -- definedMoC programs
 
         programs = collapsePrograms $ tail trimmedText
 
@@ -60,11 +63,3 @@ isProgramDef line =
 -- from a program definition, extracts the program name
 getProgramName :: String -> ProgramName
 getProgramName def = last $ words def
-
-
-program2 = "#MOC CM 2\n\n\
-           \#PROGRAM a\n\
-           \Start:\n\n\
-           \  Z1\n\
-           \Z1 / NOP://comment\n\
-           \  End\n"

@@ -24,7 +24,7 @@ foo path mstate = forever $ do
     steps <- fmap (readMaybe) getLine :: IO (Maybe Int)
     progText <- readFile path
     let (moc, progs) = parseCollection progText
-        res = run steps moc (head . sort $ elems progs) mstate
+        res = runSafe steps moc (head . sort $ elems progs) mstate
     putStrLn $ fst res ++ " " ++ snd res
 
 

@@ -1,7 +1,7 @@
 module ArbitraryInterpreter.Exec.RunProgram
 ( evalSafe
 , evalBDT
-, run
+, runSafe
 ) where
 
 import ArbitraryInterpreter.Defs
@@ -76,8 +76,8 @@ evalBDT' moc bdt i mstate
 
 
 -- run a program for x steps, first asserting that the program is valid for the given MoC
-run :: Maybe Int -> MoC -> Program -> MachineState -> (ProgramState, MachineState)
-run i moc program mstate = case preExecCheck moc program of
+runSafe :: Maybe Int -> MoC -> Program -> MachineState -> (ProgramState, MachineState)
+runSafe i moc program mstate = case preExecCheck moc program of
     False -> error $ err ++ "Invalid program"
     True  -> run' i moc program "Start" mstate
 
