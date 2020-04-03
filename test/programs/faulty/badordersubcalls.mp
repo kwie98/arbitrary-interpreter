@@ -1,4 +1,13 @@
 #MOC CM 3
+// bad order of programs, MAIN calls other programs before they are defined
+// R2 = R1 + R3
+#PROGRAM MAIN
+Start:
+    S1
+S1 / $MOVE3TO2:
+    S2
+S2 / $ADD:
+    End
 
 // R3 = R1 + R2
 #PROGRAM ADD
@@ -49,12 +58,3 @@ incR2 / R2+1:
     R3=0
         decR3
         End
-
-// R2 = R1 + R3
-#PROGRAM MAIN
-Start:
-    S1
-S1 / $MOVE3TO2:
-    S2
-S2 / $ADD:
-    End
