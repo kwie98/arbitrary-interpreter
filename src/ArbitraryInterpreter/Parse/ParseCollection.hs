@@ -7,7 +7,7 @@ import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Parse.ParseMoC
 import ArbitraryInterpreter.Parse.ParseProgram
 import ArbitraryInterpreter.Exec.RunProgram
-import Data.List (dropWhileEnd)
+import Data.List (dropWhileEnd, foldl')
 import Data.List.Split (splitOn)
 import Data.Char (isSpace)
 import qualified Data.Map.Strict as Map
@@ -18,26 +18,30 @@ import qualified Data.Map.Strict as Map
 -- HashMaps) since ordering of programs does matter here
 -- TODO empty program?
 parseCollection :: String -> (MoC, Map.Map ProgramName Program)
-parseCollection text = (expandedMoC, programs)
+parseCollection text = (expandedMoC, programMap)
     where
         trimmedText = trimProgramText text
-        definedMoC = parseMoC $ head trimmedText
-        expandedMoC = definedMoC -- Map.foldlWithKey'
-            -- (\moc pname p -> addOperation moc ('$':pname) (run Nothing))
-            -- definedMoC programs
-
         programs = collapsePrograms $ tail trimmedText
+        programMap = Map.fromListWithKey dupErr programs
+        dupErr k _ _ = error $ err ++ "Duplicate program definition for program " ++ k
+
+        definedMoC = parseMoC $ head trimmedText
+        expandedMoC = foldl'
+            (\moc (pname, p) -> addOperation moc ('$':pname)
+                (\mstate -> snd $ run Nothing moc p mstate)
+            )
+            definedMoC programs
+        err = "Error parsing program collection: "
 
 
 -- makes pairs of program definitions and their respective lines
-collapsePrograms :: [String] -> Map.Map ProgramName Program
-collapsePrograms [] = Map.empty
+collapsePrograms :: [String] -> [(ProgramName, Program)]
+collapsePrograms [] = []
 collapsePrograms (fl1:flines) = case isProgramDef fl1 of
-    True  -> Map.unionWithKey dupErr single (collapsePrograms $ dropWhile f flines)
+    True  -> single : (collapsePrograms $ dropWhile f flines)
     False -> error $ err ++ "Expected program definition, got: " ++ fl1
     where
-        dupErr k _ _ = error $ err ++ "Duplicate program definition for program " ++ k
-        single       = Map.singleton (getProgramName fl1) (parseProgram $ takeWhile f flines)
+        single       = (getProgramName fl1, parseProgram $ takeWhile f flines)
         f            = not . isProgramDef
         err = "Error parsing program collection: "
 

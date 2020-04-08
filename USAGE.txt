@@ -1,0 +1,7 @@
+Usage:
+  arbitrary-interpreter-exe FILE PROGNAME (-i=INPUT | -l=INPUTFILE) [-t]
+
+Options:
+  -i=INPUT      use given input string for machine
+  -l=INPUTFILE  read input from given file
+  -t, --trace     output a trace

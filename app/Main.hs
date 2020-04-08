@@ -1,55 +1,38 @@
-module Main where
-
-import ArbitraryInterpreter.Parse.ParseMoC
-import ArbitraryInterpreter.Parse.ParseCollection
+{-# LANGUAGE QuasiQuotes #-}
 import ArbitraryInterpreter.Exec.RunProgram
-import Data.Map.Strict (elems)
-import Data.List (sort)
-import Control.Monad
-import System.IO
-import Text.Read
+import ArbitraryInterpreter.Parse.ParseCollection
+import ArbitraryInterpreter.Defs
+import Control.Monad (when)
+import Data.Map ((!))
+import Data.Maybe (fromJust)
+import System.Console.Docopt
+import System.Environment (getArgs)
+
+-- TODO LICENSE!!!
+
+patterns :: Docopt
+patterns = [docoptFile|USAGE.txt|]
+
+getArgOrExit = getArgOrExitWith patterns
 
 main = do
-    putStrLn "Enter program file location: "
-    path <- getLine
-    -- let path = "C:\\Users\\Konrad\\Documents\\Uni\\arbitrary-interpreter\\test\\program1.txt"
-    putStrLn "Enter input machine state: "
-    mstate <- getLine
-    foo path mstate
+    print =<< getArgs
+    args <- parseArgsOrExit patterns =<< getArgs
 
+    progText  <- readFile =<< args `getArgOrExit` (argument "FILE")
+    progName  <- args `getArgOrExit` (argument "PROGNAME")
+    progInput <- getProgInput args
 
-foo :: String -> String -> IO ()
-foo path mstate = forever $ do
-    putStrLn "Enter number of steps to compute: "
-    steps <- fmap (readMaybe) getLine :: IO (Maybe Int)
-    progText <- readFile path
     let (moc, progs) = parseCollection progText
-        res = runSafe steps moc (head . sort $ elems progs) mstate
-    putStrLn $ fst res ++ " " ++ snd res
+    if (args `isPresent` (shortOption 't'))
+        then runPrintTrace Nothing moc (progs ! progName) progInput
+        else do
+            let (pstate, mstate) = run Nothing moc (progs ! progName) progInput
+            putStrLn $ pstate ++ " " ++ mstate
 
 
--- bar :: String -> String -> IO ()
--- bar path mstate = do
---     prog <- readFile path
---     print $ evalSafe (parseMoC prog) (parseProgram prog) "Start" mstate
-
-t = "    R1L\n\
-    \        R1A\n\
-    \            R1B\n\
-    \                R1C\n\
-    \                    UN\n\
-    \                    Z2C\n\
-    \                Z2B\n\
-    \            Z2A\n\
-    \        End\n"
-
-t2 = "    Z3\n"
-
-program2 = "#MOC CM 2\n\
-           \#PROGRAM a\n\
-           \Start:\n\
-           \  Z1\n\
-           \Z1 / NOP:\n\
-           \  End\n"
-
-program3 = "#sm, 2 registers"
+getProgInput :: Arguments -> IO MachineState
+getProgInput args
+    | args `isPresent` (shortOption 'i') = args `getArgOrExit` (shortOption 'i')
+    | args `isPresent` (shortOption 'l') = readFile =<< args `getArgOrExit` (shortOption 'l')
+    | otherwise = exitWithUsage patterns

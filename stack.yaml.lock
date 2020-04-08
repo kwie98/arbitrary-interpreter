@@ -3,10 +3,24 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    size: 23592
+    url: https://github.com/moll/hs-docopt/archive/8a10db17d480c82318edb5ed8393d679133873ee.tar.gz
+    cabal-file:
+      size: 3540
+      sha256: 0ff280d90aa667350f743623708107bdef427a49b64b1bdf3df15905d8cbe345
+    name: docopt
+    version: 0.7.0.5
+    sha256: 7ab6a97ba06d264c73101ffdc7c85bc9e5d698e0e76356a2fb8227ea7daff99c
+    pantry-tree:
+      size: 2001
+      sha256: 698855751b3c1e647ccad5d9724673ccd264bf7e588f131dfd881e38d308a941
+  original:
+    url: https://github.com/moll/hs-docopt/archive/8a10db17d480c82318edb5ed8393d679133873ee.tar.gz
 snapshots:
 - completed:
-    size: 491373
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/3.yaml
-    sha256: 29e9ff61b8bf4b4fcff55cde3ac106ebb971f0d21331dccac9eee63374fa6ca8
-  original: lts-15.3
+    size: 491389
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/7.yaml
+    sha256: 92ab6303fe20ec928461c82ce0980b4d17c06f4e66205a2967e476474f686c17
+  original: lts-15.7

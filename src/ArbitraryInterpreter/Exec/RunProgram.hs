@@ -1,7 +1,8 @@
 module ArbitraryInterpreter.Exec.RunProgram
 ( evalSafe
 , evalBDT
-, runSafe
+, run
+, runPrintTrace
 ) where
 
 import ArbitraryInterpreter.Defs
@@ -76,10 +77,16 @@ evalBDT' moc bdt i mstate
 
 
 -- run a program for x steps, first asserting that the program is valid for the given MoC
-runSafe :: Maybe Int -> MoC -> Program -> MachineState -> (ProgramState, MachineState)
-runSafe i moc program mstate = case preExecCheck moc program of
+run :: Maybe Int -> MoC -> Program -> MachineState -> (ProgramState, MachineState)
+run i moc program mstate = case preExecCheck moc program of
     False -> error $ err ++ "Invalid program"
     True  -> run' i moc program "Start" mstate
+
+
+runPrintTrace :: Maybe Int -> MoC -> Program -> MachineState -> IO ()
+runPrintTrace i moc program mstate = case preExecCheck moc program of
+    False -> error $ err ++ "Invalid program"
+    True  -> runPrintTrace' i moc program "Start" mstate []
 
 
 run' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState)
@@ -90,5 +97,18 @@ run' i moc program pstate mstate
     where
         i' = (subtract 1) <$> i
         (pstate', mstate', _) = eval moc program pstate mstate
+
+
+runPrintTrace' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> PredicateSequence -> IO ()
+runPrintTrace' i moc program pstate mstate trace =
+    if (((> 0) <$> i) == Just False || pstate == "End") -- no steps left or end state reached
+        then do
+            putStrLn $ pstate ++ " " ++ mstate ++ " " ++ show trace
+        else do
+            putStrLn $ pstate ++ " " ++ mstate ++ " " ++ show trace
+            let i' = (subtract 1) <$> i
+                (pstate', mstate', trace') = eval moc program pstate mstate
+            runPrintTrace' i' moc program pstate' mstate' trace'
+
 
 err = "Error running program: "

@@ -28,12 +28,13 @@ dependencies:
 - directory
 - filepath
 - split
+- docopt
 
 library:
   source-dirs: src
 
 executables:
-  arbitrary-interpreter-exe:
+  arbipreter:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
