@@ -6,6 +6,7 @@ module ArbitraryInterpreter.Parse.ParseCollection
 import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Parse.ParseMoC
 import ArbitraryInterpreter.Parse.ParseProgram
+import ArbitraryInterpreter.Exec.PreExecCheck
 import ArbitraryInterpreter.Exec.RunProgram
 import Data.List (dropWhileEnd, foldl')
 import Data.List.Split (splitOn)
@@ -27,8 +28,9 @@ parseCollection text = (expandedMoC, programMap)
 
         definedMoC = parseMoC $ head trimmedText
         expandedMoC = foldl'
-            (\moc (pname, p) -> addOperation moc ('$':pname)
-                (\mstate -> snd $ run Nothing moc p mstate)
+            (\moc (pname, p) -> case preExecCheck moc p of
+                False -> error $ err ++ "Invalid sub-program: " ++ pname
+                True  -> addOperation moc ('$':pname) (\mstate -> snd $ run Nothing moc p mstate)
             )
             definedMoC programs
         err = "Error parsing program collection: "
