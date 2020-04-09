@@ -44,9 +44,10 @@ preExecChecks moc programs = all (\p -> preExecCheck moc p) programs
 -- assert that all leaves in every given BDT are included in the given state list
 allLeavesStates :: [BDTVector] -> [ProgramState] -> Bool
 allLeavesStates [] _ = True
-allLeavesStates (tree:trees) states
-    | null nonStates = allLeavesStates trees states
-    | otherwise = error $ err ++ "State(s) " ++ show nonStates ++ " are mentioned in BDT " ++ show tree ++ ", but are not defined states in the program"
+allLeavesStates (tree:trees) states = case length nonStates of
+    0 -> allLeavesStates trees states
+    1 -> error $ err ++ "State " ++ show nonStates ++ " is mentioned in BDT " ++ show tree ++ ", but is not defined state in the program"
+    _ -> error $ err ++ "States " ++ show nonStates ++ " are mentioned in BDT " ++ show tree ++ ", but are not defined states in the program"
     where
         nonStates = filter (\leaf -> not $ leaf `elem` states) (leaves tree)
 
