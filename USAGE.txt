@@ -1,7 +1,9 @@
 Usage:
-  arbitrary-interpreter-exe FILE PROGNAME (-i=INPUT | -l=INPUTFILE) [-t]
+  arbipreter FILE [-p=PROGNAME] (-i=INPUT | -l=INPUTFILE) [-t]
 
 Options:
+  -p=PROGNAME   name of the program from the file to be run.
+                Can be omitted if file only includes one program.
   -i=INPUT      use given input string for machine
   -l=INPUTFILE  read input from given file
-  -t, --trace     output a trace
+  -t, --trace   output a trace
