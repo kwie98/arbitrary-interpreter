@@ -23,31 +23,36 @@ spec = do
     let variations = concat $ map (makeVariations) correctPrograms
 
     describe "preExecChecks" $ do
-        mapM_ (it "lets correct programs pass") $
-            [(uncurry preExecChecks $ parseCollection x) `shouldBe` True | x <- correctPrograms]
+        mapM_ (uncurry it) $
+            [("lets correct program " ++ pname ++ " pass",
+            (uncurry preExecChecks $ parseCollection p) `shouldBe` True) | (pname, p) <- correctPrograms]
 
     describe "preExecChecks" $ do
-        mapM_ (\expectation -> it "doesn't let faulty variations of correct programs pass" $ do expectation) $
-            [(evaluate $ uncurry preExecChecks $ parseCollection x) `shouldThrow` anyErrorCall | x <- variations]
+        mapM_ (\expectation -> (uncurry it) $ do expectation) $
+            [("doesn't let faulty variation of correct program " ++ pname ++ " pass",
+            (evaluate $ uncurry preExecChecks $ parseCollection p) `shouldThrow` anyErrorCall) | (pname, p) <- variations]
 
     describe "preExecChecks" $ do
-        mapM_ (\expectation -> it "doesn't let faulty programs pass" $ do expectation) $
-            [(evaluate $ uncurry preExecChecks $ parseCollection x) `shouldThrow` anyErrorCall | x <- faultyPrograms]
+        mapM_ (\expectation -> (uncurry it) $ do expectation) $
+            [("doesn't let faulty program " ++ pname ++ " pass",
+            (evaluate $ uncurry preExecChecks $ parseCollection p) `shouldThrow` anyErrorCall) | (pname, p) <- faultyPrograms]
 
 
--- return list of all programs in given dir
-readFiles :: FilePath -> IO [String]
+-- return list of all programs in given dir together with their file names
+readFiles :: FilePath -> IO [(FilePath, String)]
 readFiles path = do
     paths <- fmap (fmap (\p -> path </> p)) $ listDirectory path
-    mapM (readFile) paths
+    files <- mapM (readFile) paths
+    return $ zip paths files
 
 
--- for a program, return a list of programs which are the original program but
--- with one line removed
-makeVariations :: String -> [String]
-makeVariations s = [unlines $ deleteAt i plines | i <- [0 .. (length plines - 1)]]
+-- for a program and its path, return a list of programs which are the original
+-- program but with one line removed
+makeVariations :: (FilePath, String) -> [(FilePath, String)]
+makeVariations (pname, p) =
+    zip (repeat pname) [unlines $ deleteAt i plines | i <- [0 .. (length plines - 1)]]
     where
-        plines = trimProgramText s
+        plines = trimProgramText p
 
 
 -- delete element at given index
