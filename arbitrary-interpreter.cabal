@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d7a51bfa153b0a0e2638a57e7e99b8403d7dcaae907d2791dc85e4a2f62ab728
+-- hash: 7910b2ea49270cbf34630b217be4a9e352e5257c8c30a52f93321ef804ad2e16
 
 name:           arbitrary-interpreter
 version:        0.1.0.0
@@ -80,6 +80,7 @@ test-suite arbitrary-interpreter-test
   main-is: Spec.hs
   other-modules:
       ArbitraryInterpreter.Exec.PreExecCheckSpec
+      ArbitraryInterpreter.Exec.RunProgramSpec
       ArbitraryInterpreter.Parse.ParseMoCSpec
       ArbitraryInterpreter.Util.BDTVectorSpec
       Paths_arbitrary_interpreter

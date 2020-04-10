@@ -12,7 +12,8 @@ TakeOne / R1-:
     TakeOne
     End
 
-#PROGRAM EMPTY1 // actually pushes 'A' twice
+// actually pushes 'A' twice
+#PROGRAM EMPTY1
 Start:
     Z1
 

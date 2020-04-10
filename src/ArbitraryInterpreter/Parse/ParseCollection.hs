@@ -1,6 +1,7 @@
 module ArbitraryInterpreter.Parse.ParseCollection
 ( parseCollection
 , trimProgramText
+, isProgramDef
 ) where
 
 import ArbitraryInterpreter.Defs
@@ -17,6 +18,7 @@ import qualified Data.Map.Strict as Map
 -- Expanded MoC includes name of each program as an operation
 -- Programs are saved in a normal map (as opposed to BDTs, which are saved in
 -- HashMaps) since ordering of programs does matter here
+-- TODO maybe change this back
 parseCollection :: String -> (MoC, Map.Map ProgramName Program)
 parseCollection ""   = error $ err ++ "Empty file"
 parseCollection text = (expandedMoC, programMap)
@@ -33,7 +35,6 @@ parseCollection text = (expandedMoC, programMap)
                 True  -> addOperation moc ('$':pname) (\mstate -> snd $ run Nothing moc p mstate)
             )
             definedMoC programs
-        err = "Error parsing program collection: "
 
 
 -- makes pairs of program definitions and their respective lines
@@ -45,7 +46,6 @@ collapsePrograms (fl1:flines) = case isProgramDef fl1 of
     where
         single       = (getProgramName fl1, parseProgram $ takeWhile f flines)
         f            = not . isProgramDef
-        err = "Error parsing program collection: "
 
 
 -- Returns lines of program, removing empty lines, trailing whitespace
@@ -71,3 +71,5 @@ isProgramDef line =
 -- from a program definition, extracts the program name
 getProgramName :: String -> ProgramName
 getProgramName def = last $ words def
+
+err = "Error parsing program collection: "
