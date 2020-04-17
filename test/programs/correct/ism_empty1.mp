@@ -1,7 +1,7 @@
 
 #MOC ISM 1 "AAABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
-#PROGRAM EMTPY1
+#PROGRAM EMPTY1
 Start:
   R1=_
     TakeOne
