@@ -18,6 +18,7 @@ import qualified Data.Vector as Vector (filter)
 -- vectors describing trees actually are trees (each node is reachable from the
 -- root). Additionally, all the operations from each program state are checked
 -- to be valid within the given MoC.
+-- TODO: No loops back to start state! Always needs a start state!
 -- TODO (?):
 -- state names can only consist of alphanumerics, predicates and operations can
 -- additionally include special characters such as '+', '-', '*', '/', etc.
@@ -31,7 +32,7 @@ preExecCheck moc prog =
     where
         ops    = map (fst) $ HashMap.elems prog
         trees  = map (snd) $ HashMap.elems prog
-        states = "End" : HashMap.keys prog
+        states = "End" : HashMap.keys prog -- TODO except the start state!
 
 
 -- same as preExecCheck, but for a collection of programs with a common MoC.

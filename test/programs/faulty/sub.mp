@@ -1,3 +1,4 @@
+// subtracts number from register, but programs in bad order
 #MOC CM 1
 
 #PROGRAM sub4
