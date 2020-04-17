@@ -1,9 +1,10 @@
 Usage:
-  arbipreter FILE [-p=PROGNAME] (-i=INPUT | -l=INPUTFILE) [-t]
+  arbipreter FILE (-i=INPUT | -l=INPUTFILE) [options]
 
 Options:
-  -p=PROGNAME   name of the program from the file to be run.
-                Can be omitted if file only includes one program.
-  -i=INPUT      use given input string for machine
-  -l=INPUTFILE  read input from given file
-  -t, --trace   output a trace
+  -p=PROGNAME --program                 name of the program from the file to be run.
+                                        May be omitted iff file only includes one program.
+  -i=INPUT --input=INPUT                use given input string for machine
+  -l=INPUTFILE --long-input=INPUTFILE   read input from given file
+  -t, --trace                           output a trace in .csv format
+  -s=STEPS --max-steps=STEPS            only execute the program for a maximum of STEPS steps

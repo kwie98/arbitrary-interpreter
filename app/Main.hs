@@ -7,9 +7,9 @@ import qualified Data.Map as Map
 import Data.Maybe (fromJust, isNothing)
 import System.Console.Docopt
 import System.Environment (getArgs)
+import Text.Read (readMaybe)
 
 -- TODO LICENSE!!!
--- TODO test reading input from file
 
 patterns :: Docopt
 patterns = [docoptFile|USAGE.txt|]
@@ -17,18 +17,22 @@ patterns = [docoptFile|USAGE.txt|]
 getArgOrExit = getArgOrExitWith patterns
 
 main = do
+    -- print =<< getArgs
     args <- parseArgsOrExit patterns =<< getArgs
+    -- print args
 
     progText        <- readFile =<< args `getArgOrExit` (argument "FILE")
     progInput       <- getProgInput args
     let (moc, progs) = parseCollection progText
+        maxSteps     = readMaybe =<< args `getArg` (shortOption 's')
     progName        <- getProgName args progs
 
     if (args `isPresent` (shortOption 't'))
-        then runPrintTrace Nothing moc (progs Map.! progName) progInput
+        then runPrintTrace maxSteps moc (progs Map.! progName) progInput
         else do
-            let (pstate, mstate) = run Nothing moc (progs Map.! progName) progInput
-            putStrLn $ pstate ++ " " ++ mstate
+            let (pstate, mstate) = run maxSteps moc (progs Map.! progName) progInput
+            putStr . remnewline $ pstate ++ " " ++ mstate
+            putChar '\n'
 
 
 getProgInput :: Arguments -> IO MachineState
@@ -45,9 +49,13 @@ getProgInput args
 getProgName :: Arguments -> Map.Map ProgramName Program -> IO ProgramName
 getProgName args progs
     | Map.size progs == 1 && isNothing progName = return . head $ Map.keys progs
-    | isNothing progName = error "bla" -- exitWithUsage patterns
+    | isNothing progName = exitWithUsage patterns
     | Map.member progName' progs = return progName'
     | otherwise = error $ progName' ++ " is not in program collection"
     where
         progName  = args `getArg` (shortOption 'p')
         progName' = fromJust progName
+
+
+remnewline :: String -> String
+remnewline s = filter (\c -> c /= '\n') s
