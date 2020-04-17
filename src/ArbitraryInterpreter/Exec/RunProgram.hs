@@ -9,10 +9,12 @@ import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Exec.PreExecCheck
 import ArbitraryInterpreter.Util.BDTVector
 import qualified Data.HashMap.Strict as Map
+import Data.List (intersperse)
 import qualified Data.Vector as Vector
+import Text.Read (readMaybe)
 
 -- sequence of predicates that were evaluated to reach the next program state
-type PredicateSequence = [String] -- [(String, Bool)]
+type PredicateSequence = [(String, Bool)]
 
 -- Execute program for one step, not running preExecCheck
 -- Throw an error when trying to evaluate "End" state
@@ -50,7 +52,7 @@ evalSafe moc program pstate mstate = case preExecCheck moc program of
 
 -- Evaluate a given BDT using a specific MoC and machine state
 evalBDT :: MoC -> BDTVector -> MachineState -> (ProgramState, PredicateSequence)
-evalBDT moc bdt mstate = (last path, init path)
+evalBDT moc bdt mstate = (fst $ last path, init path)
     where
         path = case validState moc mstate of
             True  -> evalBDT' moc bdt 0 mstate
@@ -61,11 +63,11 @@ evalBDT moc bdt mstate = (last path, init path)
 -- leaves are valid states. List of strings consists of all checked predicates
 -- and ends with the new program state. First branch corresponds to predicate
 -- being false, second branch corresponds to predicate being true
-evalBDT' :: MoC -> BDTVector -> Int -> MachineState -> [String]
+evalBDT' :: MoC -> BDTVector -> Int -> MachineState -> PredicateSequence
 evalBDT' moc bdt i mstate
-    | isPState           = [curNode]
-    | isPred && predTrue = curNode : evalBDT' moc bdt (i * 2 + 2) mstate
-    | isPred             = curNode : evalBDT' moc bdt (i * 2 + 1) mstate
+    | isPState           = [(curNode, True)]
+    | isPred && predTrue = (curNode, True) : evalBDT' moc bdt (i * 2 + 2) mstate
+    | isPred             = (curNode, False) : evalBDT' moc bdt (i * 2 + 1) mstate
     | otherwise          = error $ err ++ "invalid node in BDT reached: " ++ show bdt ++ " (index: " ++ show i ++ ")"
     where
         curNode  = bdt Vector.! i
@@ -83,12 +85,6 @@ run i moc program mstate = case preExecCheck moc program of
     True  -> run' i moc program "Start" mstate
 
 
-runPrintTrace :: Maybe Int -> MoC -> Program -> MachineState -> IO ()
-runPrintTrace i moc program mstate = case preExecCheck moc program of
-    False -> error $ err ++ "Invalid program"
-    True  -> runPrintTrace' i moc program "Start" mstate []
-
-
 run' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState)
 run' i moc program pstate mstate
     | ((> 0) <$> i) == Just False = (pstate, mstate) -- no steps left
@@ -99,16 +95,44 @@ run' i moc program pstate mstate
         (pstate', mstate', _) = eval moc program pstate mstate
 
 
+runPrintTrace :: Maybe Int -> MoC -> Program -> MachineState -> IO ()
+runPrintTrace i moc program mstate = case preExecCheck moc program of
+    False -> error $ err ++ "Invalid program"
+    True  -> putStrLn "program state,machine state,predicate sequence" >> runPrintTrace' i moc program "Start" mstate []
+
+
 runPrintTrace' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> PredicateSequence -> IO ()
 runPrintTrace' i moc program pstate mstate trace =
     if (((> 0) <$> i) == Just False || pstate == "End") -- no steps left or end state reached
         then do
-            putStrLn $ pstate ++ " " ++ mstate ++ " " ++ show trace
+            putCSV pstate mstate trace
+            -- putStr . remnewline $ pstate ++ " " ++ mstate ++ " " ++ show trace
+            -- putChar '\n'
         else do
-            putStrLn $ pstate ++ " " ++ mstate ++ " " ++ show trace
+            putCSV pstate mstate trace
+            -- putStr . remnewline $ pstate ++ " " ++ mstate ++ " " ++ show trace
+            -- putChar '\n'
             let i' = (subtract 1) <$> i
                 (pstate', mstate', trace') = eval moc program pstate mstate
             runPrintTrace' i' moc program pstate' mstate' trace'
+
+
+-- TODO this only works for specific machine state formats, namely [Int] and [String]!
+putCSV :: ProgramState -> MachineState -> PredicateSequence -> IO ()
+putCSV pstate mstate trace =
+    putStrLn . remnewline $ pstate ++ "," ++ mstate' ++ "," ++ trace'
+    where
+        regsS   = readMaybe mstate :: Maybe [String]
+        regsI   = readMaybe mstate :: Maybe [Int]
+        mstate' = case (regsS, regsI) of
+            (Just a, _) -> concat $ intersperse " " $ map (show) a
+            (_, Just b) -> concat $ intersperse " " $ map (show) b
+            _           -> error "Error printing csv"
+        trace'  = concat $ intersperse " -> " $ map (\(p, b) -> p ++ " " ++ show b) trace
+
+
+remnewline :: String -> String
+remnewline s = filter (\c -> c /= '\n') s
 
 
 err = "Error running program: "
