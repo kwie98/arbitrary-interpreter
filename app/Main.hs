@@ -31,8 +31,7 @@ main = do
         then runPrintTrace maxSteps moc (progs Map.! progName) progInput
         else do
             let (pstate, mstate) = run maxSteps moc (progs Map.! progName) progInput
-            putStr . remnewline $ pstate ++ " " ++ mstate
-            putChar '\n'
+            putStrLn . remnewline $ pstate ++ " " ++ mstate
 
 
 getProgInput :: Arguments -> IO MachineState
