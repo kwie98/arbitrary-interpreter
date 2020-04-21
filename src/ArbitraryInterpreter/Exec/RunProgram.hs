@@ -1,12 +1,11 @@
 module ArbitraryInterpreter.Exec.RunProgram
-( evalSafe
+( eval
 , evalBDT
 , run
 , runPrintTrace
 ) where
 
 import ArbitraryInterpreter.Defs
-import ArbitraryInterpreter.Exec.PreExecCheck
 import ArbitraryInterpreter.Util.BDTVector
 import qualified Data.HashMap.Strict as Map
 import Data.List (intersperse)
@@ -14,10 +13,10 @@ import qualified Data.Vector as Vector
 import Text.Read (readMaybe)
 
 -- sequence of predicates that were evaluated to reach the next program state
+-- together with their truth value
 type PredicateSequence = [(String, Bool)]
 
--- Execute program for one step, not running preExecCheck
--- Throw an error when trying to evaluate "End" state
+-- Executes program for one step. Throws an error when trying to evaluate "End" state
 eval :: MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState, PredicateSequence)
 eval moc program pstate mstate = case pstate' of
     "End" -> (pstate', mstate, preds)
@@ -40,14 +39,6 @@ eval moc program pstate mstate = case pstate' of
 
         -- get new machine state by executing the operation of new program state on old machine state
         mstate' = op' mstate
-
-
--- Executes program for one step after running preExecCheck
--- Should the program not be valid, an error is thrown
-evalSafe :: MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState, PredicateSequence)
-evalSafe moc program pstate mstate = case preExecCheck moc program of
-    True  -> eval moc program pstate mstate
-    False -> error $ err ++ "Invalid program"
 
 
 -- Evaluate a given BDT using a specific MoC and machine state
@@ -78,11 +69,9 @@ evalBDT' moc bdt i mstate
             Just f  -> f mstate
 
 
--- run a program for x steps, first asserting that the program is valid for the given MoC
+-- run a program for x steps
 run :: Maybe Int -> MoC -> Program -> MachineState -> (ProgramState, MachineState)
-run i moc program mstate = case preExecCheck moc program of
-    False -> error $ err ++ "Invalid program"
-    True  -> run' i moc program "Start" mstate
+run i moc program mstate = run' i moc program "Start" mstate
 
 
 run' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState)
@@ -96,9 +85,9 @@ run' i moc program pstate mstate
 
 
 runPrintTrace :: Maybe Int -> MoC -> Program -> MachineState -> IO ()
-runPrintTrace i moc program mstate = case preExecCheck moc program of
-    False -> error $ err ++ "Invalid program"
-    True  -> putStrLn "program state,machine state,predicate sequence" >> runPrintTrace' i moc program "Start" mstate []
+runPrintTrace i moc program mstate = do
+    putStrLn "program state,machine state,predicate sequence"
+    runPrintTrace' i moc program "Start" mstate []
 
 
 runPrintTrace' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> PredicateSequence -> IO ()

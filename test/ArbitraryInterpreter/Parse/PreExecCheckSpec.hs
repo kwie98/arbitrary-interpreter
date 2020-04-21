@@ -1,8 +1,8 @@
-module ArbitraryInterpreter.Exec.PreExecCheckSpec
+module ArbitraryInterpreter.Parse.PreExecCheckSpec
 ( spec
 ) where
 
-import ArbitraryInterpreter.Exec.PreExecCheck
+import ArbitraryInterpreter.Parse.PreExecCheck
 import ArbitraryInterpreter.Parse.ParseMoC
 import ArbitraryInterpreter.Parse.ParseCollection
 import Data.List (sort)

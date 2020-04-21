@@ -7,7 +7,7 @@ module ArbitraryInterpreter.Parse.ParseCollection
 import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Parse.ParseMoC
 import ArbitraryInterpreter.Parse.ParseProgram
-import ArbitraryInterpreter.Exec.PreExecCheck
+import ArbitraryInterpreter.Parse.PreExecCheck
 import ArbitraryInterpreter.Exec.RunProgram
 import Data.List (dropWhileEnd, foldl')
 import Data.List.Split (splitOn)

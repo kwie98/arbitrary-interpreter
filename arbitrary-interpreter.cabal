@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7910b2ea49270cbf34630b217be4a9e352e5257c8c30a52f93321ef804ad2e16
+-- hash: bf6576d7e68dcd7a940298763ab8898ade9399331426177ae40652b9f0798bf6
 
 name:           arbitrary-interpreter
 version:        0.1.0.0
@@ -28,7 +28,6 @@ source-repository head
 library
   exposed-modules:
       ArbitraryInterpreter.Defs
-      ArbitraryInterpreter.Exec.PreExecCheck
       ArbitraryInterpreter.Exec.RunProgram
       ArbitraryInterpreter.MoC.CounterMachine
       ArbitraryInterpreter.MoC.InvertedStackMachine
@@ -36,6 +35,7 @@ library
       ArbitraryInterpreter.Parse.ParseCollection
       ArbitraryInterpreter.Parse.ParseMoC
       ArbitraryInterpreter.Parse.ParseProgram
+      ArbitraryInterpreter.Parse.PreExecCheck
       ArbitraryInterpreter.Util.BDTVector
       ArbitraryInterpreter.Util.LabeledTree
       ArbitraryInterpreter.Util.SPLib
@@ -79,9 +79,9 @@ test-suite arbitrary-interpreter-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      ArbitraryInterpreter.Exec.PreExecCheckSpec
       ArbitraryInterpreter.Exec.RunProgramSpec
       ArbitraryInterpreter.Parse.ParseMoCSpec
+      ArbitraryInterpreter.Parse.PreExecCheckSpec
       ArbitraryInterpreter.Util.BDTVectorSpec
       Paths_arbitrary_interpreter
   hs-source-dirs:

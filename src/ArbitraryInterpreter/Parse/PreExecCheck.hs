@@ -1,4 +1,4 @@
-module ArbitraryInterpreter.Exec.PreExecCheck
+module ArbitraryInterpreter.Parse.PreExecCheck
 ( preExecCheck
 , preExecChecks
 ) where
