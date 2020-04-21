@@ -36,22 +36,22 @@ spec = do
     --         (run Nothing moc (progMap Map.! "MAIN") "[3, 4, 5]") `shouldBe` ("End", "[0,0,8]")) | (i, (moc, progMap)) <- subcallspermuts]
 
 
--- given collection file, return permutations where order of programs is shuffled
-permuteProgCollection :: String -> [String]
-permuteProgCollection text = foo
-    where
-        trimmedText = trimProgramText text
-        mocdef = head trimmedText
-        foo = map (\perm -> unlines (mocdef : (lines perm)))
-            (map (unlines) $ permutations . collapsePrograms' $ tail trimmedText)
-
-
--- similar to ParseCollection.collapsePrograms, but returns list of program texts
-collapsePrograms' :: [String] -> [String]
-collapsePrograms' [] = []
-collapsePrograms' (fl1:flines) = case isProgramDef fl1 of
-    True  -> (unlines $ (fl1 : takeWhile f flines)) : (collapsePrograms' $ dropWhile f flines)
-    False -> error $ err ++ "Expected program definition, got: " ++ fl1
-    where
-        f = not . isProgramDef
-        err = "Error doing program order permutation test: "
+-- -- given collection file, return permutations where order of programs is shuffled
+-- permuteProgCollection :: String -> [String]
+-- permuteProgCollection text = foo
+--     where
+--         trimmedText = trimProgramText text
+--         mocdef = head trimmedText
+--         foo = map (\perm -> unlines (mocdef : (lines perm)))
+--             (map (unlines) $ permutations . collapsePrograms' $ tail trimmedText)
+--
+--
+-- -- similar to ParseCollection.collapsePrograms, but returns list of program texts
+-- collapsePrograms' :: [String] -> [String]
+-- collapsePrograms' [] = []
+-- collapsePrograms' (fl1:flines) = case isProgramDef fl1 of
+--     True  -> (unlines $ (fl1 : takeWhile f flines)) : (collapsePrograms' $ dropWhile f flines)
+--     False -> error $ err ++ "Expected program definition, got: " ++ fl1
+--     where
+--         f = not . isProgramDef
+--         err = "Error doing program order permutation test: "

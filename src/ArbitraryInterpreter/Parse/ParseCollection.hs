@@ -1,7 +1,6 @@
 module ArbitraryInterpreter.Parse.ParseCollection
 ( parseCollection
 , trimProgramText
-, isProgramDef
 ) where
 
 import ArbitraryInterpreter.Defs
