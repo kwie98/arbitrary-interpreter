@@ -33,11 +33,11 @@ spec = do
                 ["R0=A", "R1=B", "R2=A"]
 
         it "doesn't create a stack machine with a bad alphabet" $
-            (evaluate $ parseMoC "#MOC SM 3 \"ABC%&å:ý\"") `shouldThrow` errorCall
+            (evaluate . getMoC $ parseMoC "#MOC SM 3 \"ABC%&å:ý\"") `shouldThrow` errorCall
                 "Error parsing arguments for stack machine: Alphabet needs to be non-empty and can only consist of alphanumerical symbols"
 
         it "doesn't create a counter machine from definition with bogus arguments" $
-            (evaluate $ parseMoC "#MOC cm 1 2 3 asdfae ääüülö") `shouldThrow` errorCall
+            (evaluate . getMoC $ parseMoC "#MOC cm 1 2 3 asdfae ääüülö") `shouldThrow` errorCall
                 "Error parsing arguments for counter machine: Incorrect number of arguments"
 
     describe "addOperation" $ do
@@ -48,17 +48,19 @@ spec = do
                 "Error adding an operation to model of computation: Operation R1+1 already exists"
 
 
-shouldHave :: MoC -> [OpName] -> [PredName] -> Expectation
-shouldHave moc opnames prednames =
+shouldHave :: ExtendedMoC -> [OpName] -> [PredName] -> Expectation
+shouldHave xmoc opnames prednames =
     hasOps && hasPreds `shouldBe` True
     where
+        moc = getMoC xmoc
         hasOps   = and $ map (\o -> isJust $ ops moc o) opnames
         hasPreds = and $ map (\p -> isJust $ preds moc p) prednames
 
 
-shouldNotHave :: MoC -> [OpName] -> [PredName] -> Expectation
-shouldNotHave moc opnames prednames =
+shouldNotHave :: ExtendedMoC -> [OpName] -> [PredName] -> Expectation
+shouldNotHave xmoc opnames prednames =
     notHasOps && notHasPreds `shouldBe` True
     where
+        moc = getMoC xmoc
         notHasOps   = and $ map (\o -> isNothing $ ops moc o) opnames
         notHasPreds = and $ map (\p -> isNothing $ preds moc p) prednames

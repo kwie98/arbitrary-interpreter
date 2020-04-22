@@ -23,7 +23,7 @@ main = do
 
     progText        <- readFile =<< args `getArgOrExit` (argument "FILE")
     progInput       <- getProgInput args
-    let (moc, progs) = parseCollection progText
+    let (ExtendedMoC moc _ _, progs) = parseCollection progText
         maxSteps     = readMaybe =<< args `getArg` (shortOption 's')
     progName        <- getProgName args progs
 

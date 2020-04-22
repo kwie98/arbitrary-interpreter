@@ -18,7 +18,7 @@ import qualified Data.Map.Strict as Map
 -- Programs are saved in a normal map (as opposed to BDTs, which are saved in
 -- HashMaps) since ordering of programs does matter here
 -- TODO maybe change this back
-parseCollection :: String -> (MoC, Map.Map ProgramName Program)
+parseCollection :: String -> (ExtendedMoC, Map.Map ProgramName Program)
 parseCollection ""   = error $ err ++ "Empty file"
 parseCollection text = (expandedMoC, programMap)
     where
@@ -29,9 +29,9 @@ parseCollection text = (expandedMoC, programMap)
 
         definedMoC = parseMoC $ head trimmedText
         expandedMoC = foldl'
-            (\moc (pname, p) -> case preExecCheck moc p of
+            (\xmoc (pname, p) -> case preExecCheck xmoc p of
                 False -> error $ err ++ "Invalid sub-program: " ++ pname
-                True  -> addOperation moc ('$':pname) (\mstate -> snd $ run Nothing moc p mstate)
+                True  -> addOperation xmoc ('$':pname) (\mstate -> snd $ run Nothing (getMoC xmoc) p mstate)
             )
             definedMoC programs
 

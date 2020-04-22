@@ -25,7 +25,7 @@ spec = do
             [("subtracts " ++ show i ++ " when executing program " ++ subi,
             (run Nothing moc (progMap Map.! subi) "[100]") `shouldBe` ("End", show [100 - i])) |
             i <- [2, 3, 4, 7 ,10], let subi = "sub" ++ show i,
-            let (moc, progMap) = parseCollection sub10]
+            let (ExtendedMoC moc _ _, progMap) = parseCollection sub10]
     --
     --     mapM_ (uncurry xit) $
     --         [("executes permutation " ++ show i ++ " of sub4",

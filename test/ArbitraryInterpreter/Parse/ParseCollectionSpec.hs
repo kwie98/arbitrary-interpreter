@@ -1,11 +1,13 @@
-module ArbitraryInterpreter.Parse.PreExecCheckSpec
+module ArbitraryInterpreter.Parse.ParseCollectionSpec
 ( spec
 ) where
 
+import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Parse.PreExecCheck
 import ArbitraryInterpreter.Parse.ParseMoC
 import ArbitraryInterpreter.Parse.ParseCollection
 import Data.List (sort)
+import qualified Data.Map.Strict as Map
 import Control.Exception (evaluate)
 import System.Directory
 import System.FilePath ((</>))
@@ -36,6 +38,17 @@ spec = do
         mapM_ (\expectation -> (uncurry it) $ do expectation) $
             [("doesn't let faulty program " ++ pname ++ " pass",
             (evaluate $ uncurry preExecChecks $ parseCollection p) `shouldThrow` anyErrorCall) | (pname, p) <- faultyPrograms]
+
+
+-- same as preExecCheck, but for a collection of programs with a common MoC.
+-- Does not check whether the MoC actually includes all programs as operations,
+-- only those which are actually used.
+preExecChecks :: ExtendedMoC -> Map.Map ProgramName Program -> Bool
+preExecChecks moc programs = all (\p -> preExecCheck moc p) programs
+
+
+shouldEvaluate :: IO a -> Expectation
+shouldEvaluate action = (action `shouldThrow` anyErrorCall) `shouldReturn` ()
 
 
 -- return list of all programs in given dir together with their file names
