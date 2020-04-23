@@ -19,10 +19,10 @@ type PredicateSequence = [(String, Bool)]
 -- Executes program for one step. Throws an error when trying to evaluate "End" state
 eval :: MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState, PredicateSequence)
 eval moc program pstate mstate = case pstate' of
-    "End" -> (pstate', mstate, preds)
+    "End" -> (pstate', mstate, [])
     _     -> (pstate', mstate', preds)
     where
-        -- get new program state and precicate sequence by evaluating BDT of old program state on old machine state
+        -- get new program state by evaluating BDT of given program state on given machine state
         (pstate', preds) = case Map.lookup pstate program of
             Nothing       -> error $ err ++ "State " ++ pstate ++ " is not defined in the given program"
             Just (_, bdt) -> evalBDT moc bdt mstate
@@ -87,23 +87,19 @@ run' i moc program pstate mstate
 runPrintTrace :: Maybe Int -> MoC -> Program -> MachineState -> IO ()
 runPrintTrace i moc program mstate = do
     putStrLn "program state,machine state,predicate sequence"
-    runPrintTrace' i moc program "Start" mstate []
+    runPrintTrace' i moc program "Start" mstate
 
 
-runPrintTrace' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> PredicateSequence -> IO ()
-runPrintTrace' i moc program pstate mstate trace =
+runPrintTrace' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> IO ()
+runPrintTrace' i moc program pstate mstate =
     if (((> 0) <$> i) == Just False || pstate == "End") -- no steps left or end state reached
         then do
-            putCSV pstate mstate trace
-            -- putStr . remnewline $ pstate ++ " " ++ mstate ++ " " ++ show trace
-            -- putChar '\n'
+            putCSV pstate mstate []
         else do
-            putCSV pstate mstate trace
-            -- putStr . remnewline $ pstate ++ " " ++ mstate ++ " " ++ show trace
-            -- putChar '\n'
             let i' = (subtract 1) <$> i
-                (pstate', mstate', trace') = eval moc program pstate mstate
-            runPrintTrace' i' moc program pstate' mstate' trace'
+                (pstate', mstate', trace) = eval moc program pstate mstate
+            putCSV pstate mstate trace
+            runPrintTrace' i' moc program pstate' mstate'
 
 
 -- TODO this only works for specific machine state formats, namely [Int] and [String]!
