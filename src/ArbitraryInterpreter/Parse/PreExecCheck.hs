@@ -5,10 +5,12 @@ module ArbitraryInterpreter.Parse.PreExecCheck
 import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Parse.ParseProgram
 import ArbitraryInterpreter.Util.BDTVector
+import Data.List (nub, (\\))
 import Data.Maybe (isJust)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import qualified Data.Vector as Vector (filter)
+import Text.Read (readMaybe)
 
 -- checks a parsed program for validity and executability. In detail, it does
 -- the following checks on all BDTs of the program: Whether all leaves are
@@ -22,19 +24,22 @@ import qualified Data.Vector as Vector (filter)
 -- state names can only consist of alphanumerics, predicates and operations can
 -- additionally include special characters such as '+', '-', '*', '/', etc.
 preExecCheck :: ExtendedMoC -> Program -> Bool
-preExecCheck (ExtendedMoC moc r p) prog =
-    allLeavesStates trees states &&
+preExecCheck (ExtendedMoC moc r _) prog =
+    allLeavesStates trees states' &&
     allBranchesPreds trees moc &&
-    allOpsValid ops moc &&
+    allOpsValid ops moc r &&
     allTreesComplete trees &&
-    allNodesReachable trees
+    allNodesReachable trees &&
+    "Start" `elem` states
     where
-        ops    = map (fst) $ HashMap.elems prog
-        trees  = map (snd) $ HashMap.elems prog
-        states = "End" : HashMap.keys prog -- TODO except the start state!
+        ops     = nub . map (fst) $ HashMap.elems prog
+        trees   = nub . map (snd) $ HashMap.elems prog
+        states  = nub $ HashMap.keys prog
+        states' = ("End" : states) \\ ["Start"] -- reachable states
 
 
--- assert that all leaves in every given BDT are included in the given state list
+-- assert that all leaves in every given BDT are reachable states, meaning
+-- defined states or "End", but not "Start"
 allLeavesStates :: [BDTVector] -> [ProgramState] -> Bool
 allLeavesStates [] _ = True
 allLeavesStates (tree:trees) states = case length nonStates of
@@ -55,11 +60,14 @@ allBranchesPreds (tree:trees) moc
         nonPreds = filter (\branch -> not $ isPred moc branch) (branches tree)
 
 
--- assert that all operations from the program are valid operations in the given MoC
-allOpsValid :: [OpName] -> MoC -> Bool
-allOpsValid [] _ = True
-allOpsValid (op:ops) moc
-    | isOp moc op = allOpsValid ops moc
+-- asserts that all operations from the program are valid operations in the
+-- given MoC. Program calls begin with a $ and may include a permutation of up
+-- to r registers, should r not be Nothing.
+allOpsValid :: [OpName] -> MoC -> Maybe Int -> Bool
+allOpsValid [] _ _ = True
+allOpsValid (op:ops) moc r
+    | isOp moc op = allOpsValid ops moc r
+    | isValidPermutCall moc op r = allOpsValid ops moc r
     | otherwise = error $ err ++ "Program mentions invalid operation " ++ op
 
 
@@ -86,6 +94,22 @@ allNodesReachable (tree:trees)
 
 isOp :: MoC -> OpName -> Bool
 isOp moc s = isJust $ ops moc s
+
+
+-- checks whether permutations are allowed (program call in context of MoC with
+-- registers) and whether permutation is correct (no repetitions, only
+-- referencing existing registers)
+isValidPermutCall :: MoC -> OpName -> Maybe Int -> Bool
+isValidPermutCall moc op@('$':_) (Just r) = case p of
+    Just permut ->
+        maximum permut <= r &&
+        (length permut) == (length $ nub permut) &&
+        isOp moc opcode
+    Nothing -> False
+    where
+        p = sequence . map (readMaybe) . tail $ words op :: Maybe [Int]
+        opcode = head $ words op
+isValidPermutCall _ _ _ = False
 
 
 isPred :: MoC -> PredName -> Bool
