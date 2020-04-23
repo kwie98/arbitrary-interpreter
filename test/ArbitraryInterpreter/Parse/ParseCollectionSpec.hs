@@ -29,10 +29,10 @@ spec = do
             [("lets correct program " ++ pname ++ " pass",
             (uncurry preExecChecks $ parseCollection p) `shouldBe` True) | (pname, p) <- correctPrograms]
 
-    describe "preExecChecks" $ do
-        mapM_ (\expectation -> (uncurry it) $ do expectation) $
-            [("doesn't let faulty variation of correct program " ++ pname ++ " pass",
-            (evaluate $ uncurry preExecChecks $ parseCollection p) `shouldThrow` anyErrorCall) | (pname, p) <- variations]
+    -- describe "preExecChecks" $ do
+    --     mapM_ (\expectation -> (uncurry it) $ do expectation) $
+    --         [("doesn't let faulty variation of correct program " ++ pname ++ " pass",
+    --         (evaluate $ uncurry preExecChecks $ parseCollection p) `shouldThrow` anyErrorCall) | (pname, p) <- variations]
 
     describe "preExecChecks" $ do
         mapM_ (\expectation -> (uncurry it) $ do expectation) $
