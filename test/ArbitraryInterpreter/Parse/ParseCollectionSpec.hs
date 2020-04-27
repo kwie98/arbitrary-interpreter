@@ -44,7 +44,7 @@ spec = do
 -- Does not check whether the MoC actually includes all programs as operations,
 -- only those which are actually used.
 preExecChecks :: ExtendedMoC -> Map.Map ProgramName Program -> Bool
-preExecChecks moc programs = all (\p -> preExecCheck moc p) programs
+preExecChecks xmoc programs = all (\p -> preExecCheck xmoc p) programs
 
 
 shouldEvaluate :: IO a -> Expectation

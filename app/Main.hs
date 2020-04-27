@@ -17,20 +17,23 @@ patterns = [docoptFile|USAGE.txt|]
 getArgOrExit = getArgOrExitWith patterns
 
 main = do
-    -- print =<< getArgs
-    args <- parseArgsOrExit patterns =<< getArgs
+    a <- getArgs
+    let args = case parseArgs patterns a of
+            Left err -> error $ show err ++ "\n" ++ usage patterns
+            Right res -> res
     -- print args
 
-    progText        <- readFile =<< args `getArgOrExit` (argument "FILE")
-    progInput       <- getProgInput args
-    let (ExtendedMoC moc _ _, progs) = parseCollection progText
-        maxSteps     = readMaybe =<< args `getArg` (shortOption 's')
-    progName        <- getProgName args progs
+    progText         <- readFile =<< args `getArgOrExit` (argument "FILE")
+    progInput        <- getProgInput args
+    let (xmoc, progs) = parseCollection progText
+        maxSteps      = readMaybe =<< args `getArg` (shortOption 's')
+    progName         <- getProgName args progs
 
     if (args `isPresent` (shortOption 't'))
-        then runPrintTrace maxSteps moc (progs Map.! progName) progInput
+        then do
+            runPrintTrace maxSteps xmoc (progs Map.! progName) progInput
         else do
-            let (pstate, mstate) = run maxSteps moc (progs Map.! progName) progInput
+            let (pstate, mstate) = run maxSteps xmoc (progs Map.! progName) progInput
             putStrLn . remnewline $ pstate ++ " " ++ mstate
 
 

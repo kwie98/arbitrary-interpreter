@@ -8,7 +8,7 @@ module ArbitraryInterpreter.Exec.RunProgram
 import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Util.BDTVector
 import qualified Data.HashMap.Strict as Map
-import Data.List (intersperse)
+import Data.List (intersperse, sortOn, (\\))
 import qualified Data.Vector as Vector
 import Text.Read (readMaybe)
 
@@ -17,8 +17,8 @@ import Text.Read (readMaybe)
 type PredicateSequence = [(String, Bool)]
 
 -- Executes program for one step. Throws an error when trying to evaluate "End" state
-eval :: MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState, PredicateSequence)
-eval moc program pstate mstate = case pstate' of
+eval :: ExtendedMoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState, PredicateSequence)
+eval (ExtendedMoC moc moci) program pstate mstate = case pstate' of
     "End" -> (pstate', mstate, [])
     _     -> (pstate', mstate', preds)
     where
@@ -28,17 +28,35 @@ eval moc program pstate mstate = case pstate' of
             Just (_, bdt) -> evalBDT moc bdt mstate
 
         -- lookup the name of the next operation
-        opName' = case Map.lookup pstate' program of
-            Nothing     -> error $ err ++ "State " ++ pstate' ++ " is not defined in the given program"
-            Just (s, _) -> s
+        (opName', permut') = (head w, map read $ tail w :: [Int])
+            where
+                w = words $ case Map.lookup pstate' program of
+                    Nothing     -> error $ err ++ "State " ++ pstate' ++ " is not defined in the given program"
+                    Just (s, _) -> s
 
         -- extract the actual operation from the MoC
         op' = case ops moc opName' of
             Nothing -> error $ err ++ "Operation " ++ opName' ++ " is not defined in the given MoC"
             Just f  -> f
 
-        -- get new machine state by executing the operation of new program state on old machine state
-        mstate' = op' mstate
+        -- get new machine state by executing the operation of new program state
+        -- on given machine state, permuting the machine state before and after
+        -- if specified
+        mstate' = case (moci, permut') of
+            -- no permutation:
+            (_, []) -> op' mstate
+            -- permutation given, permutations allowed by MoC:
+            (Just (MoCInfo r (Just permute) _), _) -> permute invPermut . op' $ permute fullPermut mstate
+                where
+                    invPermut = fill permut'
+                    fullPermut = map fst $ sortOn snd $ zip [1..r] invPermut -- TODO MIGHT NOT WORK BECAUSE TWO INFINITE LISTS
+            -- permutation given, not allowed by MoC:
+            _ -> error $ err ++ "Operation with register permutation in program for non-register machine"
+
+
+-- completes a list representing a permutation (one-line notation) TODO MAY NEED UPPER LIMIT
+fill :: [Int] -> [Int]
+fill xs = xs ++ ([1..] \\ xs)
 
 
 -- Evaluate a given BDT using a specific MoC and machine state
@@ -70,36 +88,36 @@ evalBDT' moc bdt i mstate
 
 
 -- run a program for x steps
-run :: Maybe Int -> MoC -> Program -> MachineState -> (ProgramState, MachineState)
-run i moc program mstate = run' i moc program "Start" mstate
+run :: Maybe Int -> ExtendedMoC -> Program -> MachineState -> (ProgramState, MachineState)
+run i xmoc program mstate = run' i xmoc program "Start" mstate
 
 
-run' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState)
-run' i moc program pstate mstate
+run' :: Maybe Int -> ExtendedMoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState)
+run' i xmoc program pstate mstate
     | ((> 0) <$> i) == Just False = (pstate, mstate) -- no steps left
     | pstate == "End"             = (pstate, mstate) -- end state reached
-    | otherwise                   = run' i' moc program pstate' mstate'
+    | otherwise                   = run' i' xmoc program pstate' mstate'
     where
         i' = (subtract 1) <$> i
-        (pstate', mstate', _) = eval moc program pstate mstate
+        (pstate', mstate', _) = eval xmoc program pstate mstate
 
 
-runPrintTrace :: Maybe Int -> MoC -> Program -> MachineState -> IO ()
-runPrintTrace i moc program mstate = do
+runPrintTrace :: Maybe Int -> ExtendedMoC -> Program -> MachineState -> IO ()
+runPrintTrace i xmoc program mstate = do
     putStrLn "program state,machine state,predicate sequence"
-    runPrintTrace' i moc program "Start" mstate
+    runPrintTrace' i xmoc program "Start" mstate
 
 
-runPrintTrace' :: Maybe Int -> MoC -> Program -> ProgramState -> MachineState -> IO ()
-runPrintTrace' i moc program pstate mstate =
+runPrintTrace' :: Maybe Int -> ExtendedMoC -> Program -> ProgramState -> MachineState -> IO ()
+runPrintTrace' i xmoc program pstate mstate =
     if (((> 0) <$> i) == Just False || pstate == "End") -- no steps left or end state reached
         then do
             putCSV pstate mstate []
         else do
             let i' = (subtract 1) <$> i
-                (pstate', mstate', trace) = eval moc program pstate mstate
+                (pstate', mstate', trace) = eval xmoc program pstate mstate
             putCSV pstate mstate trace
-            runPrintTrace' i' moc program pstate' mstate'
+            runPrintTrace' i' xmoc program pstate' mstate'
 
 
 -- TODO this only works for specific machine state formats, namely [Int] and [String]!

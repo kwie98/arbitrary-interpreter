@@ -7,6 +7,7 @@ import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.MoC.CounterMachine
 import ArbitraryInterpreter.MoC.InvertedStackMachine
 import ArbitraryInterpreter.MoC.StackMachine
+import ArbitraryInterpreter.MoC.Permuters
 import Data.Char (toLower)
 import Data.Maybe (isJust)
 
@@ -14,11 +15,11 @@ parseMoC :: String -> ExtendedMoC
 parseMoC line
     | not valid = error $ err ++ "Bad format"
     | modelName == "cm" =
-        ExtendedMoC (counterMachine args) (Just numRegs) id
+        ExtendedMoC (counterMachine args) (Just (MoCInfo numRegs (Just permuteInts) Nothing))
     | modelName == "ism" =
-        ExtendedMoC (invertedStackMachine args) (Just numRegs) id
+        ExtendedMoC (invertedStackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) Nothing))
     | modelName == "sm" =
-        ExtendedMoC (stackMachine args) (Just numRegs) id
+        ExtendedMoC (stackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) Nothing))
     | otherwise = error $ err ++ "Unknown model name"
     where
         els       = words line -- split line on whitespace
@@ -32,9 +33,9 @@ parseMoC line
 -- adds a given operation to a MoC. Throws an error if the given operation name
 -- already describes an operation.
 addOperation :: ExtendedMoC -> OpName -> (MachineState -> MachineState) -> ExtendedMoC
-addOperation (ExtendedMoC oldmoc r p) opname op = case ops oldmoc opname of
+addOperation (ExtendedMoC oldmoc moci) opname op = case ops oldmoc opname of
     Just _  -> error $ err ++ "Operation " ++ opname ++ " already exists"
-    Nothing -> ExtendedMoC (MoC (validState oldmoc) ops' (preds oldmoc)) r p -- validState and preds unchanged
+    Nothing -> ExtendedMoC (MoC (validState oldmoc) ops' (preds oldmoc)) moci -- validState and preds unchanged
     where
         ops' str
             | str == opname           = Just op

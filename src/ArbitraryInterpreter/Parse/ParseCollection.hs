@@ -31,7 +31,7 @@ parseCollection text = (expandedMoC, programMap)
         expandedMoC = foldl'
             (\xmoc (pname, p) -> case preExecCheck xmoc p of
                 False -> error $ err ++ "Invalid sub-program: " ++ pname
-                True  -> addOperation xmoc ('$':pname) (\mstate -> snd $ run Nothing (getMoC xmoc) p mstate)
+                True  -> addOperation xmoc ('$':pname) (\mstate -> snd $ run Nothing xmoc p mstate)
             )
             definedMoC programs
 

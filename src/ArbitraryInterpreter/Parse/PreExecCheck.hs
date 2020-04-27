@@ -24,10 +24,10 @@ import Text.Read (readMaybe)
 -- state names can only consist of alphanumerics, predicates and operations can
 -- additionally include special characters such as '+', '-', '*', '/', etc.
 preExecCheck :: ExtendedMoC -> Program -> Bool
-preExecCheck (ExtendedMoC moc r _) prog =
+preExecCheck xmoc@(ExtendedMoC moc moci) prog =
     allLeavesStates trees states' &&
-    allBranchesPreds trees moc &&
-    allOpsValid ops moc r &&
+    allBranchesPreds moc trees &&
+    allOpsValid xmoc ops &&
     allTreesComplete trees &&
     allNodesReachable trees &&
     "Start" `elem` states
@@ -51,24 +51,49 @@ allLeavesStates (tree:trees) states = case length nonStates of
 
 
 -- assert that all branches in every given BDT are valid predicates in the given MoC
-allBranchesPreds :: [BDTVector] -> MoC -> Bool
-allBranchesPreds [] _ = True
-allBranchesPreds (tree:trees) moc
-    | null nonPreds = allBranchesPreds trees moc
+allBranchesPreds :: MoC -> [BDTVector] -> Bool
+allBranchesPreds _ [] = True
+allBranchesPreds moc (tree:trees)
+    | null nonPreds = allBranchesPreds moc trees
     | otherwise = error $ err ++ "Predicate(s) " ++ show nonPreds ++ " are mentioned in BDT" ++ show tree ++ ", but are not defined in the given MoC"
     where
         nonPreds = filter (\branch -> not $ isPred moc branch) (branches tree)
 
 
+isPred :: MoC -> PredName -> Bool
+isPred moc s = isJust $ preds moc s
+
+
 -- asserts that all operations from the program are valid operations in the
 -- given MoC. Program calls begin with a $ and may include a permutation of up
 -- to r registers, should r not be Nothing.
-allOpsValid :: [OpName] -> MoC -> Maybe Int -> Bool
-allOpsValid [] _ _ = True
-allOpsValid (op:ops) moc r
-    | isOp moc op = allOpsValid ops moc r
-    | isValidPermutCall moc op r = allOpsValid ops moc r
+allOpsValid :: ExtendedMoC -> [OpName] -> Bool
+allOpsValid _ [] = True
+allOpsValid xmoc@(ExtendedMoC moc moci) (op:ops)
+    | isOp moc op = allOpsValid xmoc ops
+    | isValidPermutCall xmoc op = allOpsValid xmoc ops
     | otherwise = error $ err ++ "Program mentions invalid operation " ++ op
+
+
+isOp :: MoC -> OpName -> Bool
+isOp moc s = isJust $ ops moc s
+
+
+-- checks whether permutations are allowed (program call in context of MoC with
+-- permute function) and whether permutation is correct (no repetitions, only
+-- referencing existing registers)
+isValidPermutCall :: ExtendedMoC -> OpName -> Bool
+isValidPermutCall (ExtendedMoC moc (Just (MoCInfo r (Just _) _))) op@('$':_) = case p of
+    Just [] -> False
+    Just permut ->
+        maximum permut <= r &&
+        (length permut) == (length $ nub permut) &&
+        isOp moc opcode
+    Nothing -> False
+    where
+        p = sequence . map (readMaybe) . tail $ words op :: Maybe [Int]
+        opcode = head $ words op
+isValidPermutCall _ _ = False
 
 
 -- assert that all BDTs are complete, meaning that every branch has exactly two
@@ -90,29 +115,5 @@ allNodesReachable (tree:trees)
     where
         reachable = countReachable tree
         nodes     = length $ Vector.filter (not . null) tree
-
-
-isOp :: MoC -> OpName -> Bool
-isOp moc s = isJust $ ops moc s
-
-
--- checks whether permutations are allowed (program call in context of MoC with
--- registers) and whether permutation is correct (no repetitions, only
--- referencing existing registers)
-isValidPermutCall :: MoC -> OpName -> Maybe Int -> Bool
-isValidPermutCall moc op@('$':_) (Just r) = case p of
-    Just permut ->
-        maximum permut <= r &&
-        (length permut) == (length $ nub permut) &&
-        isOp moc opcode
-    Nothing -> False
-    where
-        p = sequence . map (readMaybe) . tail $ words op :: Maybe [Int]
-        opcode = head $ words op
-isValidPermutCall _ _ _ = False
-
-
-isPred :: MoC -> PredName -> Bool
-isPred moc s = isJust $ preds moc s
 
 err = "Error checking program: "

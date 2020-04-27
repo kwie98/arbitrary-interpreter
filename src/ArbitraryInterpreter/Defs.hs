@@ -24,8 +24,13 @@ data MoC = MoC
 
 -- extension for allowing permuting machine states for MoC's with registers and
 -- for printing machine states in a csv-format
+data MoCInfo = MoCInfo
+    { registers     :: Int
+    , permuteMState :: Maybe ([Int] -> MachineState -> MachineState)
+    , printMState   :: Maybe (MachineState -> String)
+    }
+
 data ExtendedMoC = ExtendedMoC
-    { getMoC :: MoC
-    , registers :: Maybe Int
-    , printMState :: MachineState -> String
+    { getMoC  :: MoC
+    , getInfo :: Maybe MoCInfo
     }

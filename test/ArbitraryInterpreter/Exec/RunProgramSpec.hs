@@ -23,9 +23,9 @@ spec = do
     describe "run" $ do
         mapM_ (uncurry it) $
             [("subtracts " ++ show i ++ " when executing program " ++ subi,
-            (run Nothing moc (progMap Map.! subi) "[100]") `shouldBe` ("End", show [100 - i])) |
+            (run Nothing xmoc (progMap Map.! subi) "[100]") `shouldBe` ("End", show [100 - i])) |
             i <- [2, 3, 4, 7 ,10], let subi = "sub" ++ show i,
-            let (ExtendedMoC moc _ _, progMap) = parseCollection sub10]
+            let (xmoc, progMap) = parseCollection sub10]
     --
     --     mapM_ (uncurry xit) $
     --         [("executes permutation " ++ show i ++ " of sub4",
