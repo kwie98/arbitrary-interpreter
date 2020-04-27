@@ -9,6 +9,7 @@ import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.Util.BDTVector
 import qualified Data.HashMap.Strict as Map
 import Data.List (intersperse, sortOn, (\\))
+import Data.Maybe (fromJust)
 import qualified Data.Vector as Vector
 import Text.Read (readMaybe)
 
@@ -103,34 +104,35 @@ run' i xmoc program pstate mstate
 
 
 runPrintTrace :: Maybe Int -> ExtendedMoC -> Program -> MachineState -> IO ()
-runPrintTrace i xmoc program mstate = do
-    putStrLn "program state,machine state,predicate sequence"
+runPrintTrace i xmoc@(ExtendedMoC _ moci) program mstate = do
+    putStrLn $ case moci >>= printMState of
+        Just _ -> let r = registers $ fromJust moci in
+            "Program state," ++
+            (concat . intersperse "," $ map (\i -> 'R' : show i) [1..r])
+            ++ ",Predicate sequence"
+        Nothing -> "Program state,Machine state,Predicate sequence"
     runPrintTrace' i xmoc program "Start" mstate
 
 
 runPrintTrace' :: Maybe Int -> ExtendedMoC -> Program -> ProgramState -> MachineState -> IO ()
-runPrintTrace' i xmoc program pstate mstate =
+runPrintTrace' i xmoc@(ExtendedMoC _ moci) program pstate mstate =
     if (((> 0) <$> i) == Just False || pstate == "End") -- no steps left or end state reached
         then do
-            putCSV pstate mstate []
+            printCSV moci pstate mstate []
         else do
             let i' = (subtract 1) <$> i
                 (pstate', mstate', trace) = eval xmoc program pstate mstate
-            putCSV pstate mstate trace
+            printCSV moci pstate mstate trace
             runPrintTrace' i' xmoc program pstate' mstate'
 
 
--- TODO this only works for specific machine state formats, namely [Int] and [String]!
-putCSV :: ProgramState -> MachineState -> PredicateSequence -> IO ()
-putCSV pstate mstate trace =
+printCSV :: Maybe MoCInfo -> ProgramState -> MachineState -> PredicateSequence -> IO ()
+printCSV moci pstate mstate trace =
     putStrLn . remnewline $ pstate ++ "," ++ mstate' ++ "," ++ trace'
     where
-        regsS   = readMaybe mstate :: Maybe [String]
-        regsI   = readMaybe mstate :: Maybe [Int]
-        mstate' = case (regsS, regsI) of
-            (Just a, _) -> concat $ intersperse " " $ map (show) a
-            (_, Just b) -> concat $ intersperse " " $ map (show) b
-            _           -> error "Error printing csv"
+        mstate' = case moci >>= printMState of
+            Just printer -> printer mstate
+            Nothing -> mstate
         trace'  = concat $ intersperse " -> " $ map (\(p, b) -> p ++ " " ++ show b) trace
 
 

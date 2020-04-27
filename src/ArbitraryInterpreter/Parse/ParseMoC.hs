@@ -8,6 +8,7 @@ import ArbitraryInterpreter.MoC.CounterMachine
 import ArbitraryInterpreter.MoC.InvertedStackMachine
 import ArbitraryInterpreter.MoC.StackMachine
 import ArbitraryInterpreter.MoC.Permuters
+import ArbitraryInterpreter.MoC.Prettifiers
 import Data.Char (toLower)
 import Data.Maybe (isJust)
 
@@ -15,11 +16,11 @@ parseMoC :: String -> ExtendedMoC
 parseMoC line
     | not valid = error $ err ++ "Bad format"
     | modelName == "cm" =
-        ExtendedMoC (counterMachine args) (Just (MoCInfo numRegs (Just permuteInts) Nothing))
+        ExtendedMoC (counterMachine args) (Just (MoCInfo numRegs (Just permuteInts) (Just prettifyInts)))
     | modelName == "ism" =
-        ExtendedMoC (invertedStackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) Nothing))
+        ExtendedMoC (invertedStackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
     | modelName == "sm" =
-        ExtendedMoC (stackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) Nothing))
+        ExtendedMoC (stackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
     | otherwise = error $ err ++ "Unknown model name"
     where
         els       = words line -- split line on whitespace
