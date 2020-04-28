@@ -9,13 +9,13 @@ import Data.Maybe
 -- count and check arguments before passing to builder
 counterMachine :: [String] -> MoC
 counterMachine args
-    | length args /= 2 = error $ err ++ "Incorrect number of arguments"
-    | isNothing marg1  = error $ err ++ "Expected number of registers, got: " ++ args !! 1
-    | arg1 < 1         = error $ err ++ "Number of registers needs to be greater or equal to 1"
-    | otherwise        = buildCM arg1
+    | length args /= 1 = error $ err ++ "Incorrect number of arguments"
+    | isNothing marg0  = error $ err ++ "Expected number of registers, got: " ++ args !! 0
+    | arg0 < 1         = error $ err ++ "Number of registers needs to be greater or equal to 1"
+    | otherwise        = buildCM arg0
     where
-        marg1 = readMaybe (args !! 1) :: Maybe Int
-        arg1  = fromJust marg1
+        marg0 = readMaybe (args !! 0) :: Maybe Int
+        arg0  = fromJust marg0
         err   = "Error parsing arguments for counter machine: "
 
 

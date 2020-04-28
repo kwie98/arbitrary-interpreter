@@ -25,7 +25,7 @@ parseMoC line
     where
         els       = words line -- split line on whitespace
         valid     = head els == "#MOC"
-        args      = tail els
+        args      = tail $ tail els
         modelName = map (toLower) (els !! 1)
         numRegs   = read $ els !! 2 :: Int
         err       = "Error parsing MoC definition: "
