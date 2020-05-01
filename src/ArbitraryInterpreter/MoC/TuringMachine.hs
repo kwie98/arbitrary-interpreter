@@ -15,10 +15,10 @@ turingMachine args
     where
         arg0 = readMaybe (args !! 0) :: Maybe String
         badAlphabet = (isTMAlphabet <$> arg0) /= Just True
-        err = "Error parsing arguments for stack machine: "
+        err = "Error parsing arguments for turing machine: "
 
 
--- TODO ops, preds, tests in parsemoc, parsecollection, run
+-- TODO tests in parsemoc, parsecollection, run
 buildTM :: String -> MoC
 buildTM alphabet = MoC (isValidTMState alphabet) ops preds
     where
