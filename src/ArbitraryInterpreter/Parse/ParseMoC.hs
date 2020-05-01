@@ -7,6 +7,7 @@ import ArbitraryInterpreter.Defs
 import ArbitraryInterpreter.MoC.CounterMachine
 import ArbitraryInterpreter.MoC.InvertedStackMachine
 import ArbitraryInterpreter.MoC.StackMachine
+import ArbitraryInterpreter.MoC.TuringMachine
 import ArbitraryInterpreter.MoC.Permuters
 import ArbitraryInterpreter.MoC.Prettifiers
 import Data.Char (toLower)
@@ -21,6 +22,8 @@ parseMoC line
         ExtendedMoC (invertedStackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
     | modelName == "sm" =
         ExtendedMoC (stackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
+    | modelName == "tm" =
+        ExtendedMoC (turingMachine args) Nothing
     | otherwise = error $ err ++ "Unknown model name"
     where
         els       = words line -- split line on whitespace

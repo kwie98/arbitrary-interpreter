@@ -50,7 +50,7 @@ eval (ExtendedMoC moc moci) program pstate mstate = case pstate' of
             (Just (MoCInfo r (Just permute) _), _) -> permute invPermut . op' $ permute fullPermut mstate
                 where
                     invPermut = fill permut'
-                    fullPermut = map fst $ sortOn snd $ zip [1..r] invPermut -- TODO MIGHT NOT WORK BECAUSE TWO INFINITE LISTS
+                    fullPermut = map fst $ sortOn snd $ zip [1..r] invPermut
             -- permutation given, not allowed by MoC:
             _ -> error $ err ++ "Operation with register permutation in program for non-register machine"
 

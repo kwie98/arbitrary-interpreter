@@ -60,7 +60,7 @@ validCMPredicates numRegs =
 isValidCMState :: Int -> MachineState -> Bool
 isValidCMState r regs
     | isNothing regs'    = False
-    | length regs'' == r = True
+    | length regs'' == r = all (>= 0) regs'' --TODO TEST
     | otherwise          = False
     where
         regs'  = readMaybe regs :: Maybe [Int]
