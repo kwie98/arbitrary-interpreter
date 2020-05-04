@@ -1,4 +1,6 @@
-module ArbitraryInterpreter.MoC.LinearBoundedAutomaton where
+module ArbitraryInterpreter.MoC.LinearBoundedAutomaton
+( linearBoundedAutomaton
+) where
 
 import ArbitraryInterpreter.Defs
 import Data.Maybe (fromJust, isNothing)

@@ -1,4 +1,6 @@
-module ArbitraryInterpreter.MoC.TuringMachine where
+module ArbitraryInterpreter.MoC.TuringMachine
+( turingMachine
+) where
 
 import ArbitraryInterpreter.Defs
 import Data.Maybe (fromJust, isNothing)

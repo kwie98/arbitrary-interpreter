@@ -9,6 +9,8 @@ import ArbitraryInterpreter.MoC.InvertedStackMachine
 import ArbitraryInterpreter.MoC.StackMachine
 import ArbitraryInterpreter.MoC.TuringMachine
 import ArbitraryInterpreter.MoC.LinearBoundedAutomaton
+import ArbitraryInterpreter.MoC.PushdownAutomaton
+import ArbitraryInterpreter.MoC.FiniteStateAutomaton
 import ArbitraryInterpreter.MoC.Permuters
 import ArbitraryInterpreter.MoC.Prettifiers
 import Data.Char (toLower)
@@ -27,6 +29,10 @@ parseMoC line
         ExtendedMoC (turingMachine args) Nothing
     | modelName == "lba" =
         ExtendedMoC (linearBoundedAutomaton args) Nothing
+    | modelName == "pda" =
+        ExtendedMoC (pushdownAutomaton args) Nothing
+    | modelName == "dfa" =
+        ExtendedMoC (finiteStateAutomaton args) Nothing
     | otherwise = error $ err ++ "Unknown model name"
     where
         els       = words line -- split line on whitespace
