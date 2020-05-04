@@ -19,8 +19,8 @@ type PredicateSequence = [(String, Bool)]
 
 -- Executes program for one step. Throws an error when trying to evaluate "End" state
 eval :: ExtendedMoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState, PredicateSequence)
-eval (ExtendedMoC moc moci) program pstate mstate = case pstate' of
-    "End" -> (pstate', mstate, [])
+eval (ExtendedMoC moc moci) program pstate mstate = case pstate' of -- if end state is reached, don't apply operation
+    "End" -> (pstate', mstate, preds)
     _     -> (pstate', mstate', preds)
     where
         -- get new program state by evaluating BDT of given program state on given machine state
