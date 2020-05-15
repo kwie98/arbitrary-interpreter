@@ -7,7 +7,7 @@ Start: // this is a comment
         R1=_
             R1=A
                 R1=B
-                    R1=C
+                    R1=C // a comment
                         UN
                         Z2C
                     Z2B

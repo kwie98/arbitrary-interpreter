@@ -36,6 +36,9 @@ buildTM alphabet = MoC (isValidTMState alphabet) ops preds
             ('W':s:[]) -> if s `elem` alphabet
                 then Just $ apply (write s)
                 else Nothing
+            ('W':s:d:[]) -> if s `elem` alphabet && d `elem` "LNR"
+                then Just $ apply (move d blank . write s)
+                else Nothing
             _ -> Nothing
 
         preds predname = case predname of
@@ -90,6 +93,13 @@ moveRight bl (tape, pos)
     | otherwise = (tape, pos + 1)
     where
         rbound = length tape - 1
+
+
+move :: Char -> Char -> (String, Int) -> (String, Int)
+move direction bl mstate = case direction of
+    'L' -> moveLeft bl mstate
+    'R' -> moveRight bl mstate
+    _   -> mstate -- case 'N' or any other symbol
 
 
 write :: Char -> (String, Int) -> (String, Int)

@@ -37,7 +37,7 @@ buildDFA alphabet = MoC (isValidDFAState alphabet) ops preds
         preds predname = case predname of
             -- empty check:
             "I=" -> Just $ check (\(input, _) -> input == "")
-            -- symbol checks for first elemens of stack and input:
+            -- symbol check for first elemens of input:
             ('I':'=':x:[]) -> if x `elem` alphabet
                 then Just $ check (inputIs x)
                 else Nothing
