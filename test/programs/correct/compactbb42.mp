@@ -28,7 +28,7 @@ B1 / W0L:
         C1
 
 C0 / W1R:
-    End
+    CRASH
 
 C1 / W1L:
     =1
@@ -44,3 +44,6 @@ D1 / W0R:
     =1
         A0
         A1
+
+CRASH / CRASH:
+    End
