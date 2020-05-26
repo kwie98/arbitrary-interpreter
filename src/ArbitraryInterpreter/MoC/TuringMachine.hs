@@ -7,7 +7,7 @@ import Data.Maybe (fromJust, isNothing)
 import Text.Read (readMaybe)
 
 -- inner machine state format, a MachineState is just the "shown" version of a TMState
-type TMState = (String, Int, Bool)
+type TMState = (String, Int)
 
 -- checks the given arguments before passing them to MoC builder, precisely:
 -- number of arguments is 1
@@ -42,7 +42,6 @@ buildTM alphabet = MoC (isValidTMState alphabet) ops preds
             ('W':s:d:[]) -> if s `elem` alphabet && d `elem` "LNR"
                 then Just $ apply (move d blank . write s)
                 else Nothing
-            "CRASH" -> Just $ apply (crash)
             _ -> Nothing
 
         preds predname = case predname of
@@ -67,7 +66,7 @@ isValidTMState alphabet ms
     | otherwise = True
     where
         ms'  = readMaybe ms :: Maybe TMState
-        (tape, pos, _) = fromJust ms'
+        (tape, pos) = fromJust ms'
 
 
 -- reads machine state, applies operation and then returns string form of
@@ -82,19 +81,19 @@ checkTMPredicate p ms = p (read ms :: TMState)
 
 
 isSymbol :: Char -> TMState -> Bool
-isSymbol s (tape, pos, _) = tape !! pos == s
+isSymbol s (tape, pos) = tape !! pos == s
 
 
 moveLeft :: Char -> TMState -> TMState
-moveLeft bl (tape, pos, crashed)
-    | pos <= 0 = (bl:tape, 0, crashed) -- position stays at 0
-    | otherwise = (tape, pos - 1, crashed)
+moveLeft bl (tape, pos)
+    | pos <= 0 = (bl:tape, 0) -- position stays at 0
+    | otherwise = (tape, pos - 1)
 
 
 moveRight :: Char -> TMState -> TMState
-moveRight bl (tape, pos, crashed)
-    | pos >= rbound = (tape ++ [bl], rbound + 1, crashed) -- position is new right bound
-    | otherwise = (tape, pos + 1, crashed)
+moveRight bl (tape, pos)
+    | pos >= rbound = (tape ++ [bl], rbound + 1) -- position is new right bound
+    | otherwise = (tape, pos + 1)
     where
         rbound = length tape - 1
 
@@ -107,11 +106,6 @@ move direction bl mstate = case direction of
 
 
 write :: Char -> TMState -> TMState
-write s (tape, pos, crashed) = (left ++ (s:right), pos, crashed)
+write s (tape, pos) = (left ++ (s:right), pos)
     where
         (left, (_:right)) = splitAt pos tape
-
-
--- simulate crashing or "dying" of a turing machine when the transition function is not defined
-crash :: TMState -> TMState
-crash (tape, pos, _) = (tape, pos, True)

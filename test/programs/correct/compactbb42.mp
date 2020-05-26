@@ -45,5 +45,5 @@ D1 / W0R:
         A0
         A1
 
-CRASH / CRASH:
-    End
+CRASH / W0N:
+    CRASH
