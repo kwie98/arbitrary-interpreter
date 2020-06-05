@@ -1,27 +1,56 @@
 // accepts language {0^n1^n | n >= 0} with starting symbol Z
 // inspired by https://en.wikipedia.org/wiki/Pushdown_automaton, although this
-// PDA works slightly differently (it always ready a symbol from the input in
+// PDA works slightly differently (it always reads a symbol from the input in
 // the 'W'-operation and writing symbols is flipped)
 #MOC PDA "01AZ"
 
 #PROGRAM MAIN
 Start:
-    p
-
-p / NOP:
     I=0
-        q
+        I=1
+            I=
+                End
+                S=Z
+                    End
+                    acc
+            S=A
+                End
+                pushEPSq
         S=A
             pushZAp
             pushAAp
 
 pushZAp / WZA:
-    p
+    I=0
+        I=1
+            I=
+                End
+                S=Z
+                    End
+                    acc
+            S=A
+                End
+                pushEPSq
+        S=A
+            pushZAp
+            pushAAp
 
 pushAAp / WAA:
-    p
+    I=0
+        I=1
+            I=
+                End
+                S=Z
+                    End
+                    acc
+            S=A
+                End
+                pushEPSq
+        S=A
+            pushZAp
+            pushAAp
 
-q / NOP:
+pushEPSq / W:
     I=1
         I=
             End
@@ -31,9 +60,6 @@ q / NOP:
         S=A
             End
             pushEPSq
-
-pushEPSq / W:
-    q
 
 acc / ACC:
     End

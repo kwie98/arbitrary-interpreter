@@ -83,8 +83,8 @@ checkPDAPredicate p ms = p (read ms :: (String, String, Bool))
 
 write :: String -> (String, String, Bool) -> (String, String, Bool)
 write _   ("", stack, acc) = ("", stack, acc) -- do nothing on empty input
-write str ((_:input), "", acc) = (input, reverse str, acc)
-write str ((_:input), (_:stack), acc) = (input, (reverse str) ++ stack, acc)
+write str ((_:input), "", acc) = (input, str, acc)
+write str ((_:input), (_:stack), acc) = (input, str ++ stack, acc)
 
 
 stackIs :: Char -> (String, String, Bool) -> Bool
