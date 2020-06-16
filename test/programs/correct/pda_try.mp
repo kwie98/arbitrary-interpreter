@@ -1,4 +1,4 @@
-#MOC PDA "AB"
+#MOC RDPAMOC "AB"
 #PROGRAM P
 
 Start:

@@ -1,4 +1,4 @@
-#MOC TM "_01"
+#MOC TMMOC "_01"
 
 #PROGRAM INCREMENT
 Start:

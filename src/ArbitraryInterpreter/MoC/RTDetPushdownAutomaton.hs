@@ -1,4 +1,4 @@
-module ArbitraryInterpreter.MoC.PushdownAutomaton
+module ArbitraryInterpreter.MoC.RTDetPushdownAutomaton
 ( pushdownAutomaton
 ) where
 
@@ -8,7 +8,7 @@ import Text.Read (readMaybe)
 
 -- checks the given arguments before passing them to MoC builder, precisely:
 -- number of arguments is 1
--- arg0 is a string description of a valid TM alphabet (as checked by other function)
+-- arg0 is a string description of a valid PDA alphabet (as checked by other function)
 pushdownAutomaton :: [String] -> MoC
 pushdownAutomaton args
     | length args /= 1 = error $ err ++ "Incorrect number of arguments"

@@ -1,5 +1,5 @@
 // https://upsl.uber.space/aws19/mp_a_mult.txt
-#MOC CM 4
+#MOC CMMOC 4
 
 #PROGRAM MULT
 Start:

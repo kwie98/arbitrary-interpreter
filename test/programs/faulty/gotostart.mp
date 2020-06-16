@@ -1,4 +1,4 @@
-#MOC ISM 10 "ABC"
+#MOC ISMMOC 10 "ABC"
 
 #PROGRAM loopy
 Start:

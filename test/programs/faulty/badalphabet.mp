@@ -1,4 +1,4 @@
-#MOC ism 1 "AÐ" // manipulated alphabet
+#MOC ismMOC 1 "AÐ" // manipulated alphabet
 
 #PROGRAM EMPTY1
 Start:

@@ -1,4 +1,4 @@
-#MOC SM 1 "acb"
+#MOC SMMOC 1 "acb"
 
 #PROGRAM MAIN
 Start:

@@ -1,4 +1,4 @@
-#MOC SM 2 "ABC"
+#MOC SMMOC 2 "ABC"
 
 #PROGRAM REVERSEREG1
 Start: // this is a comment

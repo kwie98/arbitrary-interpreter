@@ -1,4 +1,4 @@
-#MOC sm 1 "A"
+#MOC smMOC 1 "A"
 
 #PROGRAM NOTHING
 Start:

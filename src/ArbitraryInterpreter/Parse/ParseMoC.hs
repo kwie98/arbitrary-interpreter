@@ -9,8 +9,8 @@ import ArbitraryInterpreter.MoC.InvertedStackMachine
 import ArbitraryInterpreter.MoC.StackMachine
 import ArbitraryInterpreter.MoC.TuringMachine
 import ArbitraryInterpreter.MoC.LinearBoundedAutomaton
-import ArbitraryInterpreter.MoC.PushdownAutomaton
-import ArbitraryInterpreter.MoC.FiniteStateAutomaton
+import ArbitraryInterpreter.MoC.RTDetPushdownAutomaton
+import ArbitraryInterpreter.MoC.DetFiniteAutomaton
 import ArbitraryInterpreter.MoC.Permuters
 import ArbitraryInterpreter.MoC.Prettifiers
 import Data.Char (toLower)
@@ -19,19 +19,19 @@ import Data.Maybe (isJust)
 parseMoC :: String -> ExtendedMoC
 parseMoC line
     | not valid = error $ err ++ "Bad format"
-    | modelName == "cm" =
+    | modelName == "cmmoc" =
         ExtendedMoC (counterMachine args) (Just (MoCInfo numRegs (Just permuteInts) (Just prettifyInts)))
-    | modelName == "ism" =
+    | modelName == "ismmoc" =
         ExtendedMoC (invertedStackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
-    | modelName == "sm" =
+    | modelName == "smmoc" =
         ExtendedMoC (stackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
-    | modelName == "tm" =
+    | modelName == "tmmoc" =
         ExtendedMoC (turingMachine args) Nothing
-    | modelName == "lba" =
+    | modelName == "lbamoc" =
         ExtendedMoC (linearBoundedAutomaton args) Nothing
-    | modelName == "pda" =
+    | modelName == "rdpamoc" =
         ExtendedMoC (pushdownAutomaton args) Nothing
-    | modelName == "dfa" =
+    | modelName == "dfamoc" =
         ExtendedMoC (finiteStateAutomaton args) Nothing
     | otherwise = error $ err ++ "Unknown model name"
     where

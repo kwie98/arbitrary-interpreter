@@ -1,4 +1,4 @@
-#MOC CM 4
+#MOC CMMOC 4
 
 // R1 <- R1 + R2
 #PROGRAM ADD

@@ -1,4 +1,4 @@
-#MOC ISM 1 "AAABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+#MOC ISMMOC 1 "AAABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
 #PROGRAM EMPTY1
 Estart: // manipulated Start state name

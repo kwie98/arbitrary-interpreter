@@ -2,7 +2,7 @@
 // inspired by https://en.wikipedia.org/wiki/Pushdown_automaton, although this
 // PDA works slightly differently (it always reads a symbol from the input in
 // the 'W'-operation and writing symbols is flipped)
-#MOC PDA "01AZ"
+#MOC RDPAMOC "01AZ"
 
 #PROGRAM MAIN
 Start:

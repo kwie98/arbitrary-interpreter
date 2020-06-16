@@ -1,4 +1,4 @@
-#MOC PDA "abA_"
+#MOC RDPAMOC "abA_"
 #PROGRAM P
 Start: // S=
     I=

@@ -1,5 +1,5 @@
 // https://en.wikipedia.org/wiki/Busy_beaver
-#MOC TM "01"
+#MOC TMMOC "01"
 
 #PROGRAM BUSYBEAVER42
 Start:

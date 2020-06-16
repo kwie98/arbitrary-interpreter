@@ -1,5 +1,5 @@
 // ~ L = {#a - #b = 3 mod 4}
-#MOC DFA "ab"
+#MOC DFAMOC "ab"
 
 #PROGRAM MAIN
 Start:

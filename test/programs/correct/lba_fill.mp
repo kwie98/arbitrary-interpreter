@@ -1,5 +1,5 @@
 // <<<<<<<.>>, . is starting position
-#MOC LBA "0<.>"
+#MOC LBAMOC "0<.>"
 
 #PROGRAM FILL
 Start:

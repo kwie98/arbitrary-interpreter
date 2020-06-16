@@ -1,4 +1,4 @@
-#MOC CM 3
+#MOC CMMOC 3
 // bad order of programs, MAIN calls other programs before they are defined
 // R2 = R1 + R3
 #PROGRAM MAIN

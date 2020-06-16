@@ -1,5 +1,5 @@
 // R3 <- R1 * R2
-#MOC CM 4
+#MOC CMMOC 4
 
 #PROGRAM MULT
 Start:

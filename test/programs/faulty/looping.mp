@@ -1,4 +1,4 @@
-#MOC CM 1
+#MOC CMMOC 1
 
 // decrease register by 1, then call P2
 #PROGRAM P1

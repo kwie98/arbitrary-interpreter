@@ -1,5 +1,5 @@
 // subtracts 10 (or whatever programs name is) from R1
-#MOC CM 1
+#MOC CMMOC 1
 
 #PROGRAM sub2
 Start:
@@ -43,7 +43,7 @@ S1 / $sub3:
 
 S2 / $sub4:
     End
-    
+
 #PROGRAM sub10
 Start:
     S1

@@ -1,5 +1,5 @@
 // subtracts number from register, but programs in bad order
-#MOC CM 1
+#MOC CMMOC 1
 
 #PROGRAM sub4
 Start:

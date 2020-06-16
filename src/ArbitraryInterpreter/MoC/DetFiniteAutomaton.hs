@@ -1,4 +1,4 @@
-module ArbitraryInterpreter.MoC.FiniteStateAutomaton
+module ArbitraryInterpreter.MoC.DetFiniteAutomaton
 ( finiteStateAutomaton
 ) where
 

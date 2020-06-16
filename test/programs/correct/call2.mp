@@ -1,5 +1,5 @@
 // program call examples
-#MOC CM 4
+#MOC CMMOC 4
 
 // increment R1 by 2
 #PROGRAM p2

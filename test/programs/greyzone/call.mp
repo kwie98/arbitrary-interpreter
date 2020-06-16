@@ -1,6 +1,6 @@
 // program call examples
 // currently not supported because of order of programs
-#MOC CM 4
+#MOC CMMOC 4
 
 #PROGRAM p1
 

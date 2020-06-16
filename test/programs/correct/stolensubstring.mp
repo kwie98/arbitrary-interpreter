@@ -1,5 +1,5 @@
 // https://upsl.uber.space/aws19/mp_b_ss.txt
-#MOC SM 4 "ABC"
+#MOC SMMOC 4 "ABC"
 
 #PROGRAM SUBSTR
 Start:

@@ -1,5 +1,5 @@
 // alphabet without quotation marks
-#MOC ism 1 AD
+#MOC ismMOC 1 AD
 
 #PROGRAM EMPTY1
 Start:
