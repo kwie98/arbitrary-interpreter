@@ -11,16 +11,19 @@ import Text.Read (readMaybe)
 -- arg0 is a string description of a valid TM alphabet (as checked by other function)
 finiteStateAutomaton :: [String] -> MoC
 finiteStateAutomaton args
-    | length args /= 1 = error $ err ++ "Incorrect number of arguments"
-    | badAlphabet = error $ err ++ "Expected valid DFA alphabet, got: " ++ args !! 0
-    | otherwise = buildDFA (fromJust arg0)
+    | length args /= 1 =
+        error $ err ++ "Incorrect number of arguments"
+    | badAlphabet =
+        error $ err ++ "Expected valid DFAMOC alphabet, got: " ++ args !! 0 ++
+        " (Alphabet can only include these symbols: " ++ validSymbols ++ ")"
+    | otherwise =
+        buildDFA (fromJust arg0)
     where
         arg0 = readMaybe (args !! 0) :: Maybe String
         badAlphabet = (isDFAAlphabet <$> arg0) /= Just True
-        err = "Error parsing arguments for finite state automaton: "
+        err = "Error parsing arguments for DFAMOC: "
 
 
--- TODO tests in parsemoc, parsecollection, run
 buildDFA :: String -> MoC
 buildDFA alphabet = MoC (isValidDFAState alphabet) ops preds
     where
@@ -29,7 +32,6 @@ buildDFA alphabet = MoC (isValidDFAState alphabet) ops preds
         check = checkDFAPredicate
 
         ops opname = case opname of
-            "NOP" -> Just id
             "NXT" -> Just $ apply (\(input, acc) -> (tail' input, acc))
             "ACC" -> Just $ apply (\(_, _) -> ("", True))
             _ -> Nothing
@@ -44,20 +46,18 @@ buildDFA alphabet = MoC (isValidDFAState alphabet) ops preds
             _ -> Nothing
 
 
--- same alphabet as TM, LBA, PDA
 isDFAAlphabet :: String -> Bool
 isDFAAlphabet "" = False
-isDFAAlphabet alphabet = all (\s -> s `elem` vs) alphabet
-    where
-        vs = ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9'] ++ "!%&()*+,-.;<>?@[]^_{|}~"
+isDFAAlphabet alphabet = all (\s -> s `elem` validSymbols) alphabet
 
 
-isValidDFAState :: String -> MachineState -> Bool
+isValidDFAState :: String -> MachineState -> Maybe String
 isValidDFAState alphabet ms
-    | isNothing ms' = False -- ms needs to be readable
-    | not $ isDFAAlphabet alphabet = False -- alphabet needs to be valid
-    | any (\s -> not $ s `elem` alphabet) input = False
-    | otherwise = True
+    | isNothing ms' =
+        Just "Machine state needs to have format (String, Bool)"
+    | any (\s -> not $ s `elem` alphabet) input =
+        Just "Input can only consist of symbols from the alphabet"
+    | otherwise = Nothing
     where
         ms'  = readMaybe ms :: Maybe (String, Bool)
         (input, accepted) = fromJust ms'

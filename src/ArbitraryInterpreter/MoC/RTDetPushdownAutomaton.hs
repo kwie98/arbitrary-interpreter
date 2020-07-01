@@ -11,16 +11,19 @@ import Text.Read (readMaybe)
 -- arg0 is a string description of a valid PDA alphabet (as checked by other function)
 pushdownAutomaton :: [String] -> MoC
 pushdownAutomaton args
-    | length args /= 1 = error $ err ++ "Incorrect number of arguments"
-    | badAlphabet = error $ err ++ "Expected valid PDA alphabet, got: " ++ args !! 0
-    | otherwise = buildPDA (fromJust arg0)
+    | length args /= 1 =
+        error $ err ++ "Incorrect number of arguments"
+    | badAlphabet =
+        error $ err ++ "Expected valid RDPAMOC alphabet, got: " ++ args !! 0 ++
+        " (Alphabet can only include these symbols: " ++ validSymbols ++ ")"
+    | otherwise =
+        buildPDA (fromJust arg0)
     where
         arg0 = readMaybe (args !! 0) :: Maybe String
         badAlphabet = (isPDAAlphabet <$> arg0) /= Just True
-        err = "Error parsing arguments for pushdown automaton: "
+        err = "Error parsing arguments for RDPAMOC: "
 
 
--- TODO tests in parsemoc, parsecollection, run
 buildPDA :: String -> MoC
 buildPDA alphabet = MoC (isValidPDAState alphabet) ops preds
     where
@@ -29,7 +32,6 @@ buildPDA alphabet = MoC (isValidPDAState alphabet) ops preds
         check = checkPDAPredicate
 
         ops opname = case opname of
-            "NOP" -> Just id
             "ACC" -> Just $ apply (\(_, stack, _) -> ("", stack, True))
             ('W':str) -> if all (\s -> s `elem` alphabet) str
                 then Just $ apply (write str)
@@ -53,18 +55,18 @@ buildPDA alphabet = MoC (isValidPDAState alphabet) ops preds
 -- same alphabet as TM, LBA
 isPDAAlphabet :: String -> Bool
 isPDAAlphabet "" = False
-isPDAAlphabet alphabet = all (\s -> s `elem` vs) alphabet
-    where
-        vs = ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9'] ++ "!%&()*+,-.;<>?@[]^_{|}~"
+isPDAAlphabet alphabet = all (\s -> s `elem` validSymbols) alphabet
 
 
-isValidPDAState :: String -> MachineState -> Bool
+isValidPDAState :: String -> MachineState -> Maybe String
 isValidPDAState alphabet ms
-    | isNothing ms' = False -- ms needs to be readable
-    | not $ isPDAAlphabet alphabet = False -- alphabet needs to be valid
-    | any (\s -> not $ s `elem` alphabet) input = False
-    | any (\s -> not $ s `elem` alphabet) stack = False
-    | otherwise = True
+    | isNothing ms' = -- ms needs to be readable
+        Just "Machine state needs to have format (String, String, Bool)"
+    | any (\s -> not $ s `elem` alphabet) input =
+        Just "Input can only consist of symbols from the alphabet"
+    | any (\s -> not $ s `elem` alphabet) stack =
+        Just "Stack can only consist of symbols from the alphabet"
+    | otherwise = Nothing
     where
         ms'  = readMaybe ms :: Maybe (String, String, Bool)
         (input, stack, accepted) = fromJust ms'

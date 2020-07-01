@@ -9,19 +9,13 @@ import System.Console.Docopt
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
 
--- TODO LICENSE!!!
-
 patterns :: Docopt
 patterns = [docoptFile|USAGE.txt|]
 
 getArgOrExit = getArgOrExitWith patterns
 
 main = do
-    a <- getArgs
-    let args = case parseArgs patterns a of
-            Left err -> error $ show err ++ "\n" ++ usage patterns
-            Right res -> res
-    -- print args
+    args <- parseArgsOrExit patterns =<< getArgs
 
     progText         <- readFile =<< args `getArgOrExit` (argument "FILE")
     progInput        <- getProgInput args

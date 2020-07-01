@@ -1,5 +1,7 @@
 #MOC RDPAMOC "01AZ"
 
+// This program accepts a similar language as the program in anbn_translated.mp.
+// However, this one is hand-written.
 #PROGRAM MAIN
 Start:
     I=0

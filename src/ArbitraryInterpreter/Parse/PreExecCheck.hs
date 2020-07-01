@@ -19,10 +19,6 @@ import Text.Read (readMaybe)
 -- vectors describing trees actually are trees (each node is reachable from the
 -- root). Additionally, all the operations from each program state are checked
 -- to be valid within the given MoC.
--- TODO: No loops back to start state! Always needs a start state!
--- TODO (?):
--- state names can only consist of alphanumerics, predicates and operations can
--- additionally include special characters such as '+', '-', '*', '/', etc.
 preExecCheck :: ExtendedMoC -> Program -> Bool
 preExecCheck xmoc@(ExtendedMoC moc moci) prog =
     allLeavesStates trees states' &&

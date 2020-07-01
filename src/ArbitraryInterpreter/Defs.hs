@@ -17,7 +17,7 @@ type ProgramName  = String
 type MachineState = String
 
 data MoC = MoC
-    { validState :: MachineState -> Bool
+    { validState :: MachineState -> Maybe String
     , ops        :: OpName       -> Maybe (MachineState -> MachineState)
     , preds      :: PredName     -> Maybe (MachineState -> Bool)
     }
@@ -34,3 +34,8 @@ data ExtendedMoC = ExtendedMoC
     { getMoC  :: MoC
     , getInfo :: Maybe MoCInfo
     }
+
+-- alphabet for DFAMOC, LBAMOC, RDPAMOC, TMMOC
+validSymbols = ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9'] ++ "!%&()*+,-.<>?@[]^_{|}~"
+-- smaller alphabet for SMMOC, ISMMOC
+validSMSymbols = ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9']

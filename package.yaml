@@ -1,14 +1,13 @@
 name:                arbitrary-interpreter
-version:             0.1.0.0
-github:              "githubuser/arbitrary-interpreter"
+version:             1.0.0.0
+github:              "Daarnok/arbitrary-interpreter"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2020 Author name here"
+author:              "Konrad Wienecke"
+maintainer:          "konrad.wienecke@mac.com"
+copyright:           "2020 Konrad Wienecke"
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -19,7 +18,7 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/githubuser/arbitrary-interpreter#readme>
 
-dependencies: # TODO check if all still needed
+dependencies:
 - base >= 4.7 && < 5
 - vector
 - unordered-containers

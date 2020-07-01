@@ -19,21 +19,7 @@ import Data.Maybe (isJust)
 parseMoC :: String -> ExtendedMoC
 parseMoC line
     | not valid = error $ err ++ "Bad format"
-    | modelName == "cmmoc" =
-        ExtendedMoC (counterMachine args) (Just (MoCInfo numRegs (Just permuteInts) (Just prettifyInts)))
-    | modelName == "ismmoc" =
-        ExtendedMoC (invertedStackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
-    | modelName == "smmoc" =
-        ExtendedMoC (stackMachine args) (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
-    | modelName == "tmmoc" =
-        ExtendedMoC (turingMachine args) Nothing
-    | modelName == "lbamoc" =
-        ExtendedMoC (linearBoundedAutomaton args) Nothing
-    | modelName == "rdpamoc" =
-        ExtendedMoC (pushdownAutomaton args) Nothing
-    | modelName == "dfamoc" =
-        ExtendedMoC (finiteStateAutomaton args) Nothing
-    | otherwise = error $ err ++ "Unknown model name"
+    | otherwise = addOperation m "NOP" (id)
     where
         els       = words line -- split line on whitespace
         valid     = head els == "#MOC"
@@ -41,10 +27,22 @@ parseMoC line
         modelName = map (toLower) (els !! 1)
         numRegs   = read $ els !! 2 :: Int
         err       = "Error parsing MoC definition: "
+        m = case modelName of
+            "cmmoc"   -> ExtendedMoC (counterMachine args)
+                (Just (MoCInfo numRegs (Just permuteInts) (Just prettifyInts)))
+            "ismmoc"  -> ExtendedMoC (invertedStackMachine args)
+                (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
+            "smmoc"   -> ExtendedMoC (stackMachine args)
+                (Just (MoCInfo numRegs (Just permuteStrings) (Just prettifyStrings)))
+            "tmmoc"   -> ExtendedMoC (turingMachine args) Nothing
+            "lbamoc"  -> ExtendedMoC (linearBoundedAutomaton args) Nothing
+            "rdpamoc" -> ExtendedMoC (pushdownAutomaton args) Nothing
+            "dfamoc"  -> ExtendedMoC (finiteStateAutomaton args) Nothing
+            _         -> error $ err ++ "Unknown model name"
 
 
 -- adds a given operation to a MoC. Throws an error if the given operation name
--- already describes an operation.
+-- already describes an operation. Used for program calls.
 addOperation :: ExtendedMoC -> OpName -> (MachineState -> MachineState) -> ExtendedMoC
 addOperation (ExtendedMoC oldmoc moci) opname op = case ops oldmoc opname of
     Just _  -> error $ err ++ "Operation " ++ opname ++ " already exists"

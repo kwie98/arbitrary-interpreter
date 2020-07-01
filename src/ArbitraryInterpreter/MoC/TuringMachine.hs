@@ -14,16 +14,19 @@ type TMState = (String, Int)
 -- arg0 is a string description of a valid TM alphabet (as checked by other function)
 turingMachine :: [String] -> MoC
 turingMachine args
-    | length args /= 1 = error $ err ++ "Incorrect number of arguments"
-    | badAlphabet = error $ err ++ "Expected valid TM alphabet, got: " ++ args !! 0
-    | otherwise = buildTM (fromJust arg0)
+    | length args /= 1 =
+        error $ err ++ "Incorrect number of arguments"
+    | badAlphabet =
+        error $ err ++ "Expected valid TMMOC alphabet, got: " ++ args !! 0 ++
+        " (Alphabet can only include these symbols: " ++ validSymbols ++ ")"
+    | otherwise =
+        buildTM (fromJust arg0)
     where
         arg0 = readMaybe (args !! 0) :: Maybe String
         badAlphabet = (isTMAlphabet <$> arg0) /= Just True
-        err = "Error parsing arguments for turing machine: "
+        err = "Error parsing arguments for TMMOC: "
 
 
--- TODO tests in parsemoc, parsecollection, run
 buildTM :: String -> MoC
 buildTM alphabet = MoC (isValidTMState alphabet) ops preds
     where
@@ -33,7 +36,6 @@ buildTM alphabet = MoC (isValidTMState alphabet) ops preds
         blank = head alphabet -- blank symbol
 
         ops opname = case opname of
-            "NOP" -> Just id
             "L" -> Just $ apply (moveLeft blank)
             "R" -> Just $ apply (moveRight blank)
             ('W':s:[]) -> if s `elem` alphabet
@@ -52,18 +54,18 @@ buildTM alphabet = MoC (isValidTMState alphabet) ops preds
 
 isTMAlphabet :: String -> Bool
 isTMAlphabet "" = False
-isTMAlphabet alphabet = all (\s -> s `elem` vs) alphabet
-    where
-        vs = ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9'] ++ "!%&()*+,-.;<>?@[]^_{|}~"
+isTMAlphabet alphabet = all (\s -> s `elem` validSymbols) alphabet
 
 
-isValidTMState :: String -> MachineState -> Bool
+isValidTMState :: String -> MachineState -> Maybe String
 isValidTMState alphabet ms
-    | isNothing ms' = False -- ms needs to be readable
-    | not $ isTMAlphabet alphabet = False -- alphabet needs to be valid
-    | pos < 0 || pos >= length tape = False -- head needs to be in bounds
-    | any (\s -> not $ s `elem` alphabet) tape =  False -- all symbols need to be valid
-    | otherwise = True
+    | isNothing ms' = -- ms needs to be readable
+        Just "Machine state needs to have format (String, Int)"
+    | pos < 0 || pos >= length tape = -- head needs to be in bounds
+        Just "Tape head cannot be out of bounds"
+    | any (\s -> not $ s `elem` alphabet) tape = -- all symbols need to be valid
+        Just "Tape can only consist of symbols from the alphabet"
+    | otherwise = Nothing
     where
         ms'  = readMaybe ms :: Maybe TMState
         (tape, pos) = fromJust ms'

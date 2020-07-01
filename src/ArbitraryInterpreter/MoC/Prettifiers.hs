@@ -5,7 +5,7 @@ import Data.List (intersperse)
 
 
 prettify :: Show a => [a] -> String
-prettify xs = concat . intersperse "," $ map (show) xs
+prettify xs = concat . intersperse ";" $ map (show) xs
 
 
 prettifyStrings :: MachineState -> String

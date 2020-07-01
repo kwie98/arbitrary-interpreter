@@ -34,11 +34,12 @@ spec = do
 
         it "doesn't create a stack machine with a bad alphabet" $
             (evaluate . getMoC $ parseMoC "#MOC SMMOC 3 \"ABC%&å:ý\"") `shouldThrow` errorCall
-                "Error parsing arguments for stack machine: Alphabet needs to be non-empty and can only consist of alphanumerical symbols"
+                ("Error parsing arguments for SMMOC: Alphabet needs to be " ++
+                "non-empty and can only include these symbols: " ++ validSMSymbols)
 
         it "doesn't create a counter machine from definition with bogus arguments" $
             (evaluate . getMoC $ parseMoC "#MOC cmMOC 1 2 3 asdfae ääüülö") `shouldThrow` errorCall
-                "Error parsing arguments for counter machine: Incorrect number of arguments"
+                "Error parsing arguments for CMMOC: Incorrect number of arguments"
 
     describe "addOperation" $ do
         let moc = parseMoC "#MOC CMMOC 3"

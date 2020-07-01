@@ -11,16 +11,19 @@ import Text.Read (readMaybe)
 -- arg0 is a string description of a valid TM alphabet (as checked by other function)
 linearBoundedAutomaton :: [String] -> MoC
 linearBoundedAutomaton args
-    | length args /= 1 = error $ err ++ "Incorrect number of arguments"
-    | badAlphabet = error $ err ++ "Expected valid LBA alphabet, got: " ++ args !! 0
-    | otherwise = buildLBA (fromJust arg0)
+    | length args /= 1 =
+        error $ err ++ "Incorrect number of arguments"
+    | badAlphabet =
+        error $ err ++ "Expected valid LBAMOC alphabet, got: " ++ args !! 0 ++
+        " (Alphabet can only include these symbols: " ++ validSymbols ++ ")"
+    | otherwise =
+        buildLBA (fromJust arg0)
     where
         arg0 = readMaybe (args !! 0) :: Maybe String
         badAlphabet = (isLBAAlphabet <$> arg0) /= Just True
-        err = "Error parsing arguments for linear bounded automaton: "
+        err = "Error parsing arguments for LBAMOC: "
 
 
--- TODO ops, preds, tests in parsemoc, parsecollection, run, test all alphabet chars
 buildLBA :: String -> MoC
 buildLBA alphabet = MoC (isValidLBAState alphabet) ops preds
     where
@@ -29,7 +32,6 @@ buildLBA alphabet = MoC (isValidLBAState alphabet) ops preds
         check = checkLBAPredicate
 
         ops opname = case opname of
-            "NOP" -> Just id
             "L" -> Just $ apply moveLeft
             "R" -> Just $ apply moveRight
             ('W':s:[]) -> if s `elem` alphabet
@@ -51,18 +53,18 @@ buildLBA alphabet = MoC (isValidLBAState alphabet) ops preds
 
 isLBAAlphabet :: String -> Bool
 isLBAAlphabet "" = False
-isLBAAlphabet alphabet = all (\s -> s `elem` vs) alphabet
-    where
-        vs = ['A'..'Z'] ++ ['a'..'z'] ++ ['0'..'9'] ++ "!%&()*+,-.;<>?@[]^_{|}~"
+isLBAAlphabet alphabet = all (\s -> s `elem` validSymbols) alphabet
 
 
-isValidLBAState :: String -> MachineState -> Bool
+isValidLBAState :: String -> MachineState -> Maybe String
 isValidLBAState alphabet ms
-    | isNothing ms' = False -- ms needs to be readable
-    | not $ isLBAAlphabet alphabet = False -- alphabet needs to be valid
-    | pos < (-1) || pos >= length tape + 1 = False -- head needs to be in or "on" bounds
-    | any (\s -> not $ s `elem` alphabet) tape =  False -- all symbols need to be valid
-    | otherwise = True
+    | isNothing ms' = -- ms needs to be readable
+        Just "Machine state needs to have format (String, Int)"
+    | pos < (-1) || pos >= length tape + 1 = -- head needs to be in or "on" bounds
+        Just "Tape head cannot be out of bounds"
+    | any (\s -> not $ s `elem` alphabet) tape = -- all symbols need to be valid
+        Just "Tape can only consist of symbols from the alphabet"
+    | otherwise = Nothing
     where
         ms'  = readMaybe ms :: Maybe (String, Int)
         (tape, pos) = fromJust ms'

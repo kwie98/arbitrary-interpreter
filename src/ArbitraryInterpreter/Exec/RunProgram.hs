@@ -14,10 +14,10 @@ import qualified Data.Vector as Vector
 import Text.Read (readMaybe)
 
 -- sequence of predicates that were evaluated to reach the next program state
--- together with their truth value
+-- together with their truth values
 type PredicateSequence = [(String, Bool)]
 
--- Executes program for one step. Throws an error when trying to evaluate "End" state
+-- Executes program for one step.
 eval :: ExtendedMoC -> Program -> ProgramState -> MachineState -> (ProgramState, MachineState, PredicateSequence)
 eval (ExtendedMoC moc moci) program pstate mstate = case pstate' of -- if end state is reached, don't apply operation
     "End" -> (pstate', mstate, preds)
@@ -55,7 +55,7 @@ eval (ExtendedMoC moc moci) program pstate mstate = case pstate' of -- if end st
             _ -> error $ err ++ "Operation with register permutation in program for non-register machine"
 
 
--- completes a list representing a permutation (one-line notation) TODO MAY NEED UPPER LIMIT
+-- completes a list representing a permutation (one-line notation)
 fill :: [Int] -> [Int]
 fill xs = xs ++ ([1..] \\ xs)
 
@@ -65,8 +65,9 @@ evalBDT :: MoC -> BDTVector -> MachineState -> (ProgramState, PredicateSequence)
 evalBDT moc bdt mstate = (fst $ last path, init path)
     where
         path = case validState moc mstate of
-            True  -> evalBDT' moc bdt 0 mstate
-            False -> error $ err ++ "Invalid machine state: " ++ mstate
+            Nothing  -> evalBDT' moc bdt 0 mstate
+            Just msg -> error $ err ++ "Invalid machine state: " ++ mstate ++
+                        "\n" ++ msg
 
 
 -- preExecCheck asserts that all branches are valid predicates and that all
@@ -107,10 +108,10 @@ runPrintTrace :: Maybe Int -> ExtendedMoC -> Program -> MachineState -> IO ()
 runPrintTrace i xmoc@(ExtendedMoC _ moci) program mstate = do
     putStrLn $ case moci >>= printMState of
         Just _ -> let r = registers $ fromJust moci in
-            "Program state," ++
-            (concat . intersperse "," $ map (\i -> 'R' : show i) [1..r])
-            ++ ",Predicate sequence"
-        Nothing -> "Program state,Machine state,Predicate sequence"
+            "Program state;" ++
+            (concat . intersperse ";" $ map (\i -> 'R' : show i) [1..r])
+            ++ ";Predicate sequence"
+        Nothing -> "Program state;Machine state;Predicate sequence"
     runPrintTrace' i xmoc program "Start" mstate
 
 
@@ -128,7 +129,7 @@ runPrintTrace' i xmoc@(ExtendedMoC _ moci) program pstate mstate =
 
 printCSV :: Maybe MoCInfo -> ProgramState -> MachineState -> PredicateSequence -> IO ()
 printCSV moci pstate mstate trace =
-    putStrLn . remnewline $ pstate ++ "," ++ mstate' ++ "," ++ trace'
+    putStrLn . remnewline $ pstate ++ ";" ++ mstate' ++ ";" ++ trace'
     where
         mstate' = case moci >>= printMState of
             Just printer -> printer mstate

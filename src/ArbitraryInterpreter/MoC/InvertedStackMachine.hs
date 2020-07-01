@@ -10,18 +10,26 @@ import Data.Maybe
 -- count and check arguments before passing to builder
 invertedStackMachine :: [String] -> MoC
 invertedStackMachine args
-    | length args /= 2         = error $ err ++ "Incorrect number of arguments"
-    | isNothing marg0          = error $ err ++ "Expected number of registers, got: " ++ args !! 0
-    | arg0 < 1                 = error $ err ++ "Number of registers needs to be greater or equal to 1"
-    | isNothing marg1          = error $ err ++ "Expected alphabet, got: " ++ args !! 1 ++ " (express alphabet as symbols in String form with enclosing quotation marks)"
-    | not $ isISMAlphabet arg1 = error $ err ++ "Alphabet needs to be non-empty and can only consist of alphanumerical symbols"
-    | otherwise                = buildISM arg0 arg1
+    | length args /= 2 =
+        error $ err ++ "Incorrect number of arguments"
+    | isNothing marg0 =
+        error $ err ++ "Expected number of registers, got: " ++ args !! 0
+    | arg0 < 1 =
+        error $ err ++ "Number of registers needs to be greater or equal to 1"
+    | isNothing marg1 =
+        error $ err ++ "Expected valid ISMMOC alphabet, got: " ++ args !! 1 ++
+        " (Alphabet can only include these symbols: " ++ validSMSymbols ++ ")"
+    | not $ isISMAlphabet arg1 =
+        error $ err ++ "Alphabet needs to be non-empty and can only include " ++
+        "these symbols: " ++ validSMSymbols
+    | otherwise =
+        buildISM arg0 arg1
     where
         marg0 = readMaybe (args !! 0) :: Maybe Int
         arg0  = fromJust marg0
         marg1 = readMaybe (args !! 1) :: Maybe String
         arg1  = fromJust marg1
-        err   = "Error parsing arguments for stack machine: "
+        err   = "Error parsing arguments for ISMMOC: "
 
 
 -- build a stack machine with a given number of registers over the given
@@ -33,7 +41,6 @@ buildISM numRegs alphabet = MoC (isValidISMState numRegs alphabet) ops preds
         ops opname
             | valid && isPop  = Just (\regs -> (popISM numRegs r regs))
             | valid           = Just (\regs -> (pushISM numRegs r regs s))
-            | opname == "NOP" = Just id
             | otherwise       = Nothing
                 where
                     valid = elem opname $ validISMOperations numRegs alphabet
@@ -68,15 +75,19 @@ validISMPredicates numRegs alphabet =
     (map (\reg -> ("R" ++ (show reg) ++ "=_")) [1..numRegs])
 
 
-isValidISMState :: Int -> String -> MachineState -> Bool
+isValidISMState :: Int -> String -> MachineState -> Maybe String
 isValidISMState r alphabet regs
-    | isNothing regs'              = False
-    | not $ isISMAlphabet alphabet = False
-    | length regs'' == r           = and (map (all (\s -> s `elem` alphabet)) regs'') -- check that all registers only have valid symbols
-    | otherwise                    = False
+    | isNothing regs' =
+        Just "Machine state needs to have format [String]"
+    | length regs'' /= r =
+        Just $ "Machine state needs to be [String] of length " ++ show r
+    | any (invalidSymbols) regs'' =
+        Just "Registers can only hold symbols from the alphabet"
+    | otherwise = Nothing
         where
             regs'  = readMaybe regs :: Maybe [String]
             regs'' = fromJust regs'
+            invalidSymbols = \reg -> any (\s -> s `notElem` alphabet) reg
 
 
 isISMAlphabet :: String -> Bool

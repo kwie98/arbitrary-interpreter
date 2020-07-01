@@ -16,7 +16,7 @@ counterMachine args
     where
         marg0 = readMaybe (args !! 0) :: Maybe Int
         arg0  = fromJust marg0
-        err   = "Error parsing arguments for counter machine: "
+        err   = "Error parsing arguments for CMMOC: "
 
 
 buildCM :: Int -> MoC
@@ -27,7 +27,6 @@ buildCM numRegs = MoC (isValidCMState numRegs) ops preds
         ops opname
             | valid && isAdd  = Just (\ms -> (setReg r ms ((getReg r ms) + 1)))
             | valid           = Just (\ms -> (setReg r ms (max 0 ((getReg r ms) - 1))))
-            | opname == "NOP" = Just id
             | otherwise       = Nothing
             where
                 -- check String representation of operation
@@ -57,11 +56,16 @@ validCMPredicates numRegs =
 
 
 -- check if given machine state fits given number of registers of the machine
-isValidCMState :: Int -> MachineState -> Bool
+-- if machine state is erroneous, return an error message. Otherwise, return Nothing
+isValidCMState :: Int -> MachineState -> Maybe String
 isValidCMState r regs
-    | isNothing regs'    = False
-    | length regs'' == r = all (>= 0) regs'' --TODO TEST
-    | otherwise          = False
+    | isNothing regs' =
+        Just "Machine state needs to have format [Int]"
+    | length regs'' /= r =
+        Just $ "Machine state needs to be [Int] of length " ++ show r
+    | any (< 0) regs'' =
+        Just "Registers can only hold non-negative values"
+    | otherwise = Nothing
     where
         regs'  = readMaybe regs :: Maybe [Int]
         regs'' = fromJust regs'

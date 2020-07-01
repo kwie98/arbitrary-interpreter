@@ -17,7 +17,6 @@ import qualified Data.Map.Strict as Map
 -- Expanded MoC includes name of each program as an operation
 -- Programs are saved in a normal map (as opposed to BDTs, which are saved in
 -- HashMaps) since ordering of programs does matter here
--- TODO maybe change this back
 parseCollection :: String -> (ExtendedMoC, Map.Map ProgramName Program)
 parseCollection ""   = error $ err ++ "Empty file"
 parseCollection text = (expandedMoC, programMap)
