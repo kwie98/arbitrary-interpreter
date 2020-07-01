@@ -8,3 +8,7 @@ Options:
   -l=INPUTFILE --long-input=INPUTFILE   read input from given file
   -t, --trace                           output a trace in .csv format
   -s=STEPS --max-steps=STEPS            only execute the program for a maximum of STEPS steps
+
+Examples (using bash):
+  arbipreter "machine_programs/cmmoc/accumulate2.mp" -l="test/mstates/cm4.txt" -p=MAIN -t
+  arbipreter "machine_programs/tmmoc/compactbb42.mp" -i="(\"0\", 0)" -t"
