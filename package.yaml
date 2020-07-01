@@ -1,6 +1,6 @@
 name:                arbitrary-interpreter
 version:             1.0.0.0
-github:              "Daarnok/arbitrary-interpreter"
+github:              "kwie98/arbitrary-interpreter"
 license:             BSD3
 author:              "Konrad Wienecke"
 maintainer:          "konrad.wienecke@mac.com"

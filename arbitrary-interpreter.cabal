@@ -4,13 +4,13 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b202bc9dfa9db1976bc0c0bfae91dd79ef5f6c624f5c1dc47249d8f52d182dea
+-- hash: 4e3aae3760cd489138ddf498667f16e0c570b97369b2ac9acc7e9dd43b2cb87f
 
 name:           arbitrary-interpreter
 version:        1.0.0.0
 description:    Please see the README on GitHub at <https://github.com/githubuser/arbitrary-interpreter#readme>
-homepage:       https://github.com/Daarnok/arbitrary-interpreter#readme
-bug-reports:    https://github.com/Daarnok/arbitrary-interpreter/issues
+homepage:       https://github.com/kwie98/arbitrary-interpreter#readme
+bug-reports:    https://github.com/kwie98/arbitrary-interpreter/issues
 author:         Konrad Wienecke
 maintainer:     konrad.wienecke@mac.com
 copyright:      2020 Konrad Wienecke
@@ -22,7 +22,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/Daarnok/arbitrary-interpreter
+  location: https://github.com/kwie98/arbitrary-interpreter
 
 library
   exposed-modules:
